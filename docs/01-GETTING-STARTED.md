@@ -234,7 +234,18 @@ Once the plan looks good:
 
 ## Applying Changes to Okta
 
-Merging to main doesn't automatically apply changes to Okta. This is intentional for safety.
+**⚠️ IMPORTANT:** Merging to main doesn't automatically apply changes to Okta. This is intentional for safety.
+
+**What merging a PR does:**
+- ✅ Updates your repository code
+- ✅ Triggers automatic `terraform plan` (shows what would change)
+- ❌ **Does NOT** apply changes to Okta
+
+**What you must do manually:**
+- 🎯 Trigger `terraform-apply-with-approval.yml` workflow
+- 🎯 Review and approve the apply (if environment protection configured)
+- 🎯 Wait for apply to complete
+- 🎯 Verify changes in Okta Admin Console
 
 ### Manual Apply Workflow
 

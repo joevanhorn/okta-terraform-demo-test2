@@ -6,6 +6,75 @@
 
 ---
 
+## 🚦 Critical Understanding: Automatic vs Manual
+
+### ⚡ Automatic Workflows (No Action Needed)
+
+These run automatically when you create PRs or merge to main:
+
+| Workflow | Triggers On | What It Does | Action Needed |
+|----------|-------------|--------------|---------------|
+| **terraform-plan.yml** | Pull Request, Push to main | Shows what would change | ✅ **Review output** |
+| **validate-pr.yml** | Pull Request | Validates YAML, security scan | ✅ **Fix any errors** |
+| **validate-label-mappings.yml** | PR with label changes | Validates JSON syntax | ✅ **Fix syntax errors** |
+| **apply-labels-from-config.yml** (dry-run) | Merge to main (if labels changed) | Shows label changes | ✅ **Review, then manual apply** |
+
+**Key Point:** These workflows run automatically but **DON'T** change anything in Okta. They only validate and preview.
+
+### 🎯 Manual Workflows (You Must Trigger)
+
+These require you to manually run them:
+
+| Workflow | When to Run | What It Does | Safety |
+|----------|-------------|--------------|---------|
+| **import-all-resources.yml** | Initial setup, weekly drift check | Import from Okta to code | ✅ Safe (read-only) |
+| **terraform-apply-with-approval.yml** | After merging Terraform changes | **Creates/updates/deletes** Okta resources | ⚠️ **Changes Okta!** |
+| **apply-owners.yml** | After editing owner_mappings.json | Assigns resource owners | ⚠️ **Changes Okta!** |
+| **apply-labels-from-config.yml** (apply) | After reviewing auto-dry-run | Applies labels to resources | ⚠️ **Changes Okta!** |
+| **apply-admin-labels.yml** | Initial setup or ad-hoc | Auto-labels admin entitlements | ⚠️ **Changes Okta!** |
+| **sync-labels.yml** | Before editing labels | Syncs current labels to code | ✅ Safe (read-only) |
+| **export-oig.yml** | Backup, audit | Exports OIG to JSON | ✅ Safe (read-only) |
+| **fix-bundle-campaign-errors.yml** | When bundles have errors | Fixes stale campaign refs | ⚠️ **Changes Okta!** |
+| **governance-setup.yml** | Initial OIG setup | Creates baseline governance | ⚠️ **Changes Okta!** |
+
+**Key Point:** Manual workflows that "Change Okta" require you to explicitly trigger them. This prevents accidental changes.
+
+### 📋 Complete GitOps Flow
+
+Here's what happens from PR to production:
+
+```
+1. CREATE BRANCH
+   └─> You: Create feature branch locally
+
+2. MAKE CHANGES
+   └─> You: Edit Terraform files
+
+3. CREATE PR
+   └─> You: Push branch, create PR
+   └─> ⚡ AUTO: terraform-plan.yml runs
+   └─> ⚡ AUTO: validate-pr.yml runs
+   └─> 👀 You: Review plan output
+
+4. CODE REVIEW
+   └─> Team: Reviews code and plan
+   └─> Team: Approves PR
+
+5. MERGE TO MAIN
+   └─> You: Click merge button
+   └─> ⚡ AUTO: terraform-plan.yml runs again
+   └─> ⚡ AUTO: If labels changed, apply-labels-from-config.yml runs (dry-run)
+
+6. APPLY TO OKTA (MANUAL!)
+   └─> 🎯 YOU MUST: Run terraform-apply-with-approval.yml manually
+   └─> ⏸️ WAIT: Approval gate (if configured)
+   └─> ✅ APPLY: Changes applied to Okta
+```
+
+**Most Common Mistake:** Users merge PR and think it's applied. **It's not!** You must manually trigger apply.
+
+---
+
 ## 🎯 Quick Task Finder
 
 ### Common Tasks
