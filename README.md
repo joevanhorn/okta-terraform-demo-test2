@@ -6,14 +6,24 @@ A complete GitOps solution for managing Okta Identity Governance (OIG) using Inf
 
 ## 🚀 Quick Start
 
-**New to this template?** Follow these steps:
+### ⚡ First Time Here? Start Here!
 
-1. **Click "Use this template"** button above to create your repository
-2. **Read [TEMPLATE_SETUP.md](./TEMPLATE_SETUP.md)** for detailed setup instructions
-3. **Create your first environment** in `environments/mycompany/`
-4. **Set up GitHub Environment** with Okta API credentials
-5. **Import from your Okta tenant** using workflows
-6. **Start managing with GitOps!**
+**👉 [QUICKSTART.md](./QUICKSTART.md) - Get your first success in 10 minutes!**
+
+No prior knowledge needed - just follow the step-by-step guide to:
+1. Click "Use this template"
+2. Add your Okta credentials
+3. Import your Okta org into code
+4. See the results!
+
+### 📚 Detailed Setup
+
+For comprehensive setup with all options:
+**[TEMPLATE_SETUP.md](./TEMPLATE_SETUP.md)** - Complete setup guide covering:
+- AWS backend configuration
+- Multiple environments
+- Advanced options
+- Testing and validation
 
 ## What's Included
 
