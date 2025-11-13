@@ -2,9 +2,10 @@
 
 This directory contains tools and templates for using AI assistants (Gemini, ChatGPT, Claude) to generate Terraform code for Okta infrastructure.
 
-**Two approaches available:**
+**Three approaches available:**
 1. **Tier 1: Prompt Engineering** (Manual copy/paste with any AI)
 2. **Tier 2: CLI Tool** (Automated with API integration)
+3. **Tier 3: Gemini Gem** (Custom AI assistant, easiest for non-technical users)
 
 ---
 
@@ -13,10 +14,11 @@ This directory contains tools and templates for using AI assistants (Gemini, Cha
 1. [Quick Start](#quick-start)
 2. [Tier 1: Prompt Engineering (Recommended for Beginners)](#tier-1-prompt-engineering)
 3. [Tier 2: CLI Tool (Advanced)](#tier-2-cli-tool)
-4. [Directory Structure](#directory-structure)
-5. [Available Prompts](#available-prompts)
-6. [Best Practices](#best-practices)
-7. [Troubleshooting](#troubleshooting)
+4. [Tier 3: Gemini Gem (Easiest)](#tier-3-gemini-gem)
+5. [Directory Structure](#directory-structure)
+6. [Available Prompts](#available-prompts)
+7. [Best Practices](#best-practices)
+8. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -79,6 +81,31 @@ This directory contains tools and templates for using AI assistants (Gemini, Cha
 
 **Time: ~2-3 minutes**
 **Cost: Direct API costs (pay-per-use)**
+
+### For Non-Technical Users (Tier 3)
+
+1. **Create your Gemini Gem:**
+   - Follow: `GEM_SETUP_GUIDE.md` (15 minute one-time setup)
+   - Paste instructions from: `GEM_INSTRUCTIONS.md`
+   - Upload context from: `GEM_QUICK_REFERENCE.md`
+
+2. **Use your Gem:**
+   - Go to [gemini.google.com/gems](https://gemini.google.com/gems)
+   - Open your "Okta Terraform Generator" Gem
+   - Type: "Create 5 marketing users and a Salesforce app"
+   - Copy generated code to your `.tf` files
+
+3. **Apply:**
+   ```bash
+   terraform fmt
+   terraform validate
+   terraform plan
+   terraform apply
+   ```
+
+**Time: ~1 minute per generation (after setup)**
+**Cost: Gemini API costs (~$3-10/month for typical use)**
+**Best for:** Solutions Engineers, non-developers, frequent demo creation
 
 ---
 
@@ -339,6 +366,217 @@ options:
 
 ---
 
+## Tier 3: Gemini Gem
+
+### Overview
+
+Create a custom Gemini Gem (personalized AI assistant) that permanently remembers all Okta Terraform patterns and rules. This is the **easiest and fastest** method for non-technical users who generate demos frequently.
+
+### What is a Gemini Gem?
+
+**Google Gems** are customized versions of Gemini that you configure once and reuse forever:
+- Remember specialized instructions permanently
+- Accessible from any device via browser
+- Can be shared with team members
+- No local software installation required
+- No need to paste context files every time
+
+**Think of it as:** Your personal Okta Terraform expert that's always available.
+
+### Why Use a Gem?
+
+**Advantages over Tier 1:**
+- ✅ No need to paste context files every time
+- ✅ Faster (1 min vs 10 min per generation)
+- ✅ More consistent output
+- ✅ Shareable with team
+
+**Advantages over Tier 2:**
+- ✅ No Python installation required
+- ✅ No local setup or dependencies
+- ✅ Access from any device (laptop, tablet, phone)
+- ✅ Perfect for non-developers
+
+**When to use Gem:**
+- You generate Terraform code frequently (weekly or more)
+- You want the fastest possible workflow
+- You don't want to install Python
+- You're a Solutions Engineer focused on demos
+- You want to share with non-technical team members
+
+### Setup Guide
+
+**Complete step-by-step guide:** See `GEM_SETUP_GUIDE.md`
+
+**Quick setup (15 minutes one-time):**
+
+1. **Create Gem at [gemini.google.com/gems](https://gemini.google.com/gems)**
+
+2. **Name it:** "Okta Terraform Generator"
+
+3. **Paste instructions:**
+   - Copy all content from: `GEM_INSTRUCTIONS.md`
+   - Paste into Gem's "Instructions" field
+
+4. **Upload knowledge (optional but recommended):**
+   - Upload: `GEM_QUICK_REFERENCE.md`
+   - Or upload all context files from `context/` folder
+
+5. **Configure settings:**
+   - Temperature: Low (deterministic output)
+   - Model: Gemini 1.5 Pro or latest
+
+6. **Test:**
+   ```
+   Create 3 engineering users and an Engineering Team group
+   ```
+
+7. **Done!** Bookmark your Gem for quick access
+
+### Using Your Gem
+
+#### Basic Workflow
+
+1. **Open your Gem:**
+   - Go to [gemini.google.com/gems](https://gemini.google.com/gems)
+   - Click "Okta Terraform Generator"
+
+2. **Send prompt:**
+   ```
+   Create 5 marketing users, a Marketing Team group, and a Salesforce OAuth app
+   ```
+
+3. **Copy generated code:**
+   - Gem outputs complete Terraform HCL
+   - Copy to appropriate `.tf` files
+
+4. **Apply:**
+   ```bash
+   cd environments/mycompany/terraform
+   terraform fmt
+   terraform validate
+   terraform plan
+   terraform apply
+   ```
+
+#### Example Prompts
+
+**Users:**
+```
+Create 3 users in the sales department
+```
+
+**Groups:**
+```
+Create an Administrators group with 2 admin users
+```
+
+**Applications:**
+```
+Create a Single Page Application for our React admin dashboard
+```
+
+**Complete demos:**
+```
+Create a complete demo with:
+- 10 users across 3 departments
+- Department groups
+- GitHub app for engineering
+- Salesforce for marketing
+```
+
+**OIG features:**
+```
+Create quarterly access review campaigns for 2025
+```
+
+### Tier 3 Advantages
+
+✅ **Fastest workflow** - 1 minute per generation
+✅ **No installation** - Browser-based, works anywhere
+✅ **No context pasting** - Gem remembers everything
+✅ **Team sharing** - Share Gem link with colleagues
+✅ **Consistent output** - Same quality every time
+✅ **Beginner friendly** - No coding or terminal skills needed
+✅ **Mobile accessible** - Use from phone/tablet
+✅ **Always up-to-date** - Update instructions once, affects all uses
+
+### Cost
+
+**Gemini API Pricing (2025):**
+- **Free tier:** 60 requests/minute (sufficient for most SEs)
+- **Paid tier:** ~$20/month for Gemini Advanced (optional)
+
+**Typical usage costs:**
+- Light use (5 generations/week): **Free tier sufficient**
+- Heavy use (50 generations/week): **~$3-10/month**
+- Team (5 people): **~$15-50/month total**
+
+**ROI:** Saves 2-3 hours/week compared to manual demo building = **$200-400/week in SE time**
+
+### Sharing with Team
+
+**Option 1: Direct sharing (Google Workspace)**
+1. Open Gem settings
+2. Click "Share"
+3. Add team members by email
+
+**Option 2: Share setup files**
+1. Share `GEM_SETUP_GUIDE.md`
+2. Share `GEM_INSTRUCTIONS.md`
+3. Team members create their own Gems
+
+**Option 3: Team template**
+- Create shared doc with team-specific examples
+- Link to Gem setup guide
+- Include common prompts for your org
+
+### Troubleshooting
+
+**Problem: Gem generates code with wrong template syntax**
+
+Solution: Remind Gem in prompt:
+```
+Create 3 users. Remember to use $$ for template strings.
+```
+
+**Problem: Can't upload knowledge files**
+
+Solution: Paste critical patterns from `GEM_QUICK_REFERENCE.md` into instructions field
+
+**Problem: Gem outputs explanations instead of code**
+
+Solution: Add to prompt:
+```
+Create 3 users. Output only code, no explanations.
+```
+
+**More troubleshooting:** See `GEM_SETUP_GUIDE.md`
+
+### Files for Gem Setup
+
+| File | Purpose | Size |
+|------|---------|------|
+| `GEM_SETUP_GUIDE.md` | Step-by-step setup instructions | Complete guide |
+| `GEM_INSTRUCTIONS.md` | Paste into Gem instructions field | ~400 lines |
+| `GEM_QUICK_REFERENCE.md` | Upload as knowledge file | ~250 lines |
+
+### Comparison: Tier 1 vs Tier 2 vs Tier 3
+
+| Feature | Tier 1 | Tier 2 | Tier 3 (Gem) |
+|---------|--------|--------|--------------|
+| **Setup time** | 0 min | 20 min | 15 min |
+| **Per-task time** | 10-15 min | 2 min | **1 min** |
+| **Installation** | None | Python + packages | None |
+| **API key** | No | Yes | Yes |
+| **Context memory** | Manual paste | Automatic | **Permanent** |
+| **Best for** | Learning | Automation | **Frequent demos** |
+| **Team sharing** | Docs | Scripts | **Gem link** |
+| **Mobile access** | ❌ | ❌ | **✅** |
+| **Non-technical** | ✅ | ❌ | **✅** |
+
+---
+
 ## Directory Structure
 
 ```
@@ -346,6 +584,10 @@ ai-assisted/
 ├── README.md                          # This file
 ├── requirements.txt                   # Python dependencies
 ├── generate.py                        # CLI tool (Tier 2)
+│
+├── GEM_SETUP_GUIDE.md                 # Tier 3: Step-by-step Gem setup guide
+├── GEM_INSTRUCTIONS.md                # Tier 3: Instructions to paste into Gem
+├── GEM_QUICK_REFERENCE.md             # Tier 3: Condensed context for Gem
 │
 ├── prompts/                           # Prompt templates (Tier 1)
 │   ├── create_demo_environment.md     # Full demo environment
@@ -628,6 +870,24 @@ Make sure you pasted all three context files:
 - OpenAI: ~$15-60/month
 - Claude: ~$10-45/month
 
+### Tier 3: Gemini Gem (API Costs)
+
+- **Cost:** Gemini API costs (~$0.001-0.01 per generation)
+- **Time:** ~1 minute per generation (fastest!)
+- **Setup:** 15 minutes one-time
+- **Best for:** Solutions Engineers, frequent demo creation, non-technical users
+
+**Example monthly costs:**
+- Light use (5 generations/week): **Free tier** (60 requests/min limit)
+- Heavy use (50 generations/week): **~$3-10/month**
+- Team (5 people): **~$15-50/month total**
+
+**ROI calculation:**
+- Time saved: 2-3 hours/week vs manual demo building
+- Value: $200-400/week in SE time saved
+- Gem cost: $3-10/month
+- **Return:** 20-100x ROI
+
 ---
 
 ## Examples and Demos
@@ -715,6 +975,6 @@ Filename: complete_demo.tf
 
 ---
 
-**Last Updated:** 2025-11-07
+**Last Updated:** 2025-11-12
 
 **Happy Generating! 🚀**
