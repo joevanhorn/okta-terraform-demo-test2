@@ -198,7 +198,7 @@ Best for: Deploying to production
 3. Ask in [GitHub Discussions](https://github.com/joevanhorn/okta-terraform-demo-template/discussions)
 
 **Want to see it working?**
-Visit the [working example repository](https://github.com/joevanhorn/okta-terraform-complete-demo) with fully configured LowerDeckLabs environment.
+Visit the [working example repository](https://github.com/joevanhorn/okta-terraform-complete-demo) with fully configured MyOrg environment.
 
 **Need help getting started?**
 Follow [QUICKSTART.md](../QUICKSTART.md) - it's designed for absolute beginners!

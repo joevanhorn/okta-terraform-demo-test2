@@ -35,8 +35,8 @@ valid Terraform configuration files following the examples and patterns provided
 the context above.
 
 ENVIRONMENT DETAILS:
-- Target environment: lowerdecklabs
-- Files should go in: environments/lowerdecklabs/terraform/
+- Target environment: myorg
+- Files should go in: environments/myorg/terraform/
 
 DEMO SCENARIO:
 [Describe your demo scenario here]
@@ -104,7 +104,7 @@ After the AI generates the code:
 
 1. **Copy the generated files** to your environment:
    ```bash
-   cd environments/lowerdecklabs/terraform
+   cd environments/myorg/terraform
    # Paste generated code into appropriate files
    ```
 
@@ -144,8 +144,8 @@ Here's an example of how you might fill out the template:
 I need to create a complete Okta demo environment using Terraform.
 
 ENVIRONMENT DETAILS:
-- Target environment: lowerdecklabs
-- Files should go in: environments/lowerdecklabs/terraform/
+- Target environment: myorg
+- Files should go in: environments/myorg/terraform/
 
 DEMO SCENARIO:
 Mid-sized SaaS company demonstrating role-based access control and OIG features

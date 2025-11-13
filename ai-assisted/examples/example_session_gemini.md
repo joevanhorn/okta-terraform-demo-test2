@@ -27,7 +27,7 @@ Please read and understand the patterns, then I'll ask you to generate some code
 I've reviewed the context files. I understand:
 
 1. Repository Structure:
-   - Environment-based organization (environments/lowerdecklabs/terraform/)
+   - Environment-based organization (environments/myorg/terraform/)
    - Separate files for each resource type (users.tf, groups.tf, apps.tf, etc.)
    - Naming conventions using snake_case
    - Template string escaping with $$
@@ -52,8 +52,8 @@ I'm ready to generate Terraform code following these patterns. What would you li
 ```
 Perfect! I need to create a complete demo environment for a SaaS company demonstration.
 
-ENVIRONMENT: lowerdecklabs
-TARGET PATH: environments/lowerdecklabs/terraform/
+ENVIRONMENT: myorg
+TARGET PATH: environments/myorg/terraform/
 
 DEMO SCENARIO:
 Mid-sized SaaS company with engineering and marketing departments. Show RBAC and app integrations.
@@ -102,7 +102,7 @@ Please include descriptive comments and follow all the patterns from the context
 I'll generate the complete Terraform configuration for your demo environment. Here are the files:
 
 ---
-**File: environments/lowerdecklabs/terraform/users.tf**
+**File: environments/myorg/terraform/users.tf**
 
 ```hcl
 # Demo Users for SaaS Company Demo Environment
@@ -202,7 +202,7 @@ resource "okta_user" "jennifer_lee" {
 ```
 
 ---
-**File: environments/lowerdecklabs/terraform/groups.tf**
+**File: environments/myorg/terraform/groups.tf**
 
 ```hcl
 # Demo Groups for SaaS Company Demo Environment
@@ -234,7 +234,7 @@ resource "okta_group" "all_employees" {
 ```
 
 ---
-**File: environments/lowerdecklabs/terraform/group_memberships.tf**
+**File: environments/myorg/terraform/group_memberships.tf**
 
 ```hcl
 # Group Membership Assignments for Demo Environment
@@ -318,7 +318,7 @@ resource "okta_group_memberships" "all_employees_members" {
 ```
 
 ---
-**File: environments/lowerdecklabs/terraform/apps.tf**
+**File: environments/myorg/terraform/apps.tf**
 
 ```hcl
 # OAuth Applications for Demo Environment
@@ -410,7 +410,7 @@ resource "okta_app_oauth" "slack" {
 ```
 
 ---
-**File: environments/lowerdecklabs/terraform/app_assignments.tf**
+**File: environments/myorg/terraform/app_assignments.tf**
 
 ```hcl
 # Application Group Assignments for Demo Environment
@@ -451,7 +451,7 @@ I've generated all the necessary Terraform files for your demo environment:
 - ✅ Descriptive comments throughout
 
 **Next Steps:**
-1. Copy each file to your environments/lowerdecklabs/terraform/ directory
+1. Copy each file to your environments/myorg/terraform/ directory
 2. Run `terraform fmt` to format
 3. Run `terraform validate` to check syntax
 4. Run `terraform plan` to preview changes
@@ -582,7 +582,7 @@ Carlos is now added to both Engineering Team and All Employees!
 The complete generated files are production-ready and can be applied immediately with:
 
 ```bash
-cd environments/lowerdecklabs/terraform
+cd environments/myorg/terraform
 terraform init
 terraform plan
 terraform apply

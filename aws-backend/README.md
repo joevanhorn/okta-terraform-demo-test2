@@ -41,7 +41,7 @@ States are organized by environment:
 ```
 okta-terraform-demo/
 └── Okta-GitOps/
-    ├── lowerdecklabs/
+    ├── myorg/
     │   └── terraform.tfstate
     ├── production/
     │   └── terraform.tfstate
@@ -99,7 +99,7 @@ If you have existing local state files:
 
 ```bash
 # For each environment
-cd environments/lowerdecklabs/terraform
+cd environments/myorg/terraform
 
 # This will prompt to migrate state
 terraform init -migrate-state
@@ -127,11 +127,11 @@ In two separate terminals:
 
 ```bash
 # Terminal 1
-cd environments/lowerdecklabs/terraform
+cd environments/myorg/terraform
 terraform apply
 
 # Terminal 2 (while Terminal 1 is waiting)
-cd environments/lowerdecklabs/terraform
+cd environments/myorg/terraform
 terraform plan
 # Should see: "Error acquiring the state lock"
 ```
@@ -144,12 +144,12 @@ This confirms state locking is working!
 # List state versions
 aws s3api list-object-versions \
   --bucket okta-terraform-demo \
-  --prefix Okta-GitOps/lowerdecklabs/terraform.tfstate
+  --prefix Okta-GitOps/myorg/terraform.tfstate
 
 # Restore a previous version if needed
 aws s3api get-object \
   --bucket okta-terraform-demo \
-  --key Okta-GitOps/lowerdecklabs/terraform.tfstate \
+  --key Okta-GitOps/myorg/terraform.tfstate \
   --version-id <VERSION_ID> \
   terraform.tfstate.backup
 ```
@@ -242,7 +242,7 @@ variable "state_bucket_name" {
 **Solution:**
 ```bash
 # Verify backend configuration
-terraform init -backend-config="key=Okta-GitOps/lowerdecklabs/terraform.tfstate"
+terraform init -backend-config="key=Okta-GitOps/myorg/terraform.tfstate"
 
 # List all objects in bucket
 aws s3 ls s3://okta-terraform-demo/Okta-GitOps/ --recursive
@@ -311,7 +311,7 @@ aws s3api list-object-versions \
 
 ```bash
 # First, migrate all environments back to local state
-cd environments/lowerdecklabs/terraform
+cd environments/myorg/terraform
 terraform init -migrate-state -backend=false
 
 # Repeat for all environments

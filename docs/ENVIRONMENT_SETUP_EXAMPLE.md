@@ -1,12 +1,12 @@
-# LowerDeckLabs Environment Setup Guide
+# MyOrg Environment Setup Guide
 
-This guide walks you through setting up the **LowerDeckLabs** GitHub environment for safe, import-only operations on your primary demo tenant.
+This guide walks you through setting up the **MyOrg** GitHub environment for safe, import-only operations on your primary demo tenant.
 
 ---
 
 ## 🚨 Critical Safety Notice
 
-**LowerDeckLabs is a PRIMARY DEMO TENANT** - we use strict safeguards to prevent accidental modifications:
+**MyOrg is a PRIMARY DEMO TENANT** - we use strict safeguards to prevent accidental modifications:
 
 - ✅ **Import-only operations** by default
 - ✅ **Manual approval required** for any apply operations
@@ -32,7 +32,7 @@ This guide walks you through setting up the **LowerDeckLabs** GitHub environment
 1. **Navigate** to your GitHub repository
 2. Go to **Settings** → **Environments**
 3. Click **New environment**
-4. Name it: `LowerDeckLabs`
+4. Name it: `MyOrg`
 5. Click **Configure environment**
 
 ### Step 2: Configure Protection Rules
@@ -61,11 +61,11 @@ This guide walks you through setting up the **LowerDeckLabs** GitHub environment
 
 ## Secrets Configuration
 
-Add these secrets specifically to the **LowerDeckLabs** environment:
+Add these secrets specifically to the **MyOrg** environment:
 
 ### Navigate to Secrets
 
-1. In the **LowerDeckLabs** environment settings
+1. In the **MyOrg** environment settings
 2. Scroll to **Environment secrets**
 3. Click **Add secret** for each:
 
@@ -73,7 +73,7 @@ Add these secrets specifically to the **LowerDeckLabs** environment:
 
 | Secret Name | Value | Description |
 |-------------|-------|-------------|
-| `OKTA_ORG_NAME` | `demo-lowerdecklabs` | Your Okta org subdomain |
+| `OKTA_ORG_NAME` | `demo-myorg` | Your Okta org subdomain |
 | `OKTA_BASE_URL` | `oktapreview.com` | Your Okta base URL |
 | `OKTA_API_TOKEN` | `<your-api-token>` | API token with governance scopes |
 
@@ -105,20 +105,20 @@ Your API token must have these scopes:
 ### Environment Configuration
 
 ```yaml
-Environment: LowerDeckLabs
+Environment: MyOrg
 ├── Protection Rules:
 │   ├── Required Reviewers: 1+ (YOU)
 │   ├── Wait Timer: 5 minutes (optional)
 │   └── Deployment Branches: main only
 │
 ├── Secrets:
-│   ├── OKTA_ORG_NAME: demo-lowerdecklabs
+│   ├── OKTA_ORG_NAME: demo-myorg
 │   ├── OKTA_BASE_URL: oktapreview.com
 │   └── OKTA_API_TOKEN: <redacted>
 │
 └── Workflows Allowed:
-    ├── lowerdecklabs-import.yml (import standard resources)
-    └── lowerdecklabs-export-oig.yml (export OIG resources with modular approach)
+    ├── myorg-import.yml (import standard resources)
+    └── myorg-export-oig.yml (export OIG resources with modular approach)
 ```
 
 ### What Gets Protected
@@ -140,7 +140,7 @@ Environment: LowerDeckLabs
 
 ```bash
 # Triggers: Manual or scheduled weekly
-# File: .github/workflows/lowerdecklabs-import.yml
+# File: .github/workflows/myorg-import.yml
 ```
 
 **What it does:**
@@ -151,7 +151,7 @@ Environment: LowerDeckLabs
 - **Does NOT apply changes** - import-only
 
 **How to run:**
-1. Go to **Actions** → **LowerDeckLabs - Import Resources**
+1. Go to **Actions** → **MyOrg - Import Resources**
 2. Click **Run workflow**
 3. Select branch: `main`
 4. Click **Run workflow**
@@ -162,7 +162,7 @@ Environment: LowerDeckLabs
 
 ```bash
 # Triggers: Manual
-# File: .github/workflows/lowerdecklabs-export-oig.yml
+# File: .github/workflows/myorg-export-oig.yml
 ```
 
 **What it does:**
@@ -174,7 +174,7 @@ Environment: LowerDeckLabs
 - **Does NOT modify anything** - export-only
 
 **How to run:**
-1. Go to **Actions** → **LowerDeckLabs OIG Export**
+1. Go to **Actions** → **MyOrg OIG Export**
 2. Click **Run workflow**
 3. **Approve** the deployment (required for environment protection)
 4. Review the export commit in the repository
@@ -183,7 +183,7 @@ Environment: LowerDeckLabs
 
 **What happens:**
 - Export runs and collects OIG resources
-- Results are committed to `oig-exports/lowerdecklabs/`
+- Results are committed to `oig-exports/myorg/`
 - Files created: `latest.json` and `YYYY-MM-DD.json`
 - Also uploaded as artifact for backup (180 days retention)
 
@@ -191,7 +191,7 @@ Environment: LowerDeckLabs
 
 ```bash
 # Triggers: Manual or on PR to main
-# File: .github/workflows/lowerdecklabs-plan.yml
+# File: .github/workflows/myorg-plan.yml
 ```
 
 **What it does:**
@@ -209,15 +209,15 @@ Environment: LowerDeckLabs
 
 ```bash
 # Triggers: Manual only
-# File: .github/workflows/lowerdecklabs-apply.yml
+# File: .github/workflows/myorg-apply.yml
 ```
 
 **What it does:**
-- Applies Terraform changes to LowerDeckLabs
+- Applies Terraform changes to MyOrg
 - **CAN MODIFY YOUR TENANT** - use with extreme caution
 
 **How to run:**
-1. Go to **Actions** → **LowerDeckLabs - Apply Changes**
+1. Go to **Actions** → **MyOrg - Apply Changes**
 2. Click **Run workflow**
 3. **WAIT** for required reviewer approval
 4. Reviewer must explicitly approve
@@ -230,7 +230,7 @@ Environment: LowerDeckLabs
 
 ## Importing OIG Resources
 
-LowerDeckLabs includes **Okta Integration Network** apps and other complex resources not supported by Terraformer. We have custom scripts for these:
+MyOrg includes **Okta Integration Network** apps and other complex resources not supported by Terraformer. We have custom scripts for these:
 
 ### Supported OIG Imports
 
@@ -248,7 +248,7 @@ LowerDeckLabs includes **Okta Integration Network** apps and other complex resou
 
 ```bash
 # Trigger the export workflow
-Actions → LowerDeckLabs OIG Export → Run workflow
+Actions → MyOrg OIG Export → Run workflow
 ```
 
 The workflow uses the modular `okta_api_manager.py` script with the following features:
@@ -261,7 +261,7 @@ The workflow uses the modular `okta_api_manager.py` script with the following fe
 
 ```bash
 # Set environment variables
-export OKTA_ORG_NAME="demo-lowerdecklabs"
+export OKTA_ORG_NAME="demo-myorg"
 export OKTA_BASE_URL="oktapreview.com"
 export OKTA_API_TOKEN="<your-api-token>"
 
@@ -271,7 +271,7 @@ python3 scripts/okta_api_manager.py \
   --org-name $OKTA_ORG_NAME \
   --base-url $OKTA_BASE_URL \
   --api-token $OKTA_API_TOKEN \
-  --output lowerdecklabs_oig_export.json \
+  --output myorg_oig_export.json \
   --export-labels \
   --export-entitlements
   # Add --export-owners --resource-orns <orns> to export resource owners
@@ -282,7 +282,7 @@ python3 scripts/okta_api_manager.py \
 ```json
 {
   "export_date": "2025-11-07T01:59:19Z",
-  "okta_org": "demo-lowerdecklabs",
+  "okta_org": "demo-myorg",
   "okta_base_url": "oktapreview.com",
   "export_status": {
     "labels": "not_available",
@@ -296,13 +296,13 @@ python3 scripts/okta_api_manager.py \
       "description": "Description",
       "principals": [
         {
-          "orn": "orn:okta:directory:demo-lowerdecklabs:users:00u123",
+          "orn": "orn:okta:directory:demo-myorg:users:00u123",
           "email": "user@example.com"
         }
       ],
       "resources": [
         {
-          "orn": "orn:okta:idp:demo-lowerdecklabs:apps:oauth2:0oa456",
+          "orn": "orn:okta:idp:demo-myorg:apps:oauth2:0oa456",
           "name": "App Name"
         }
       ]
@@ -323,14 +323,14 @@ python3 scripts/okta_api_manager.py \
 
 ```bash
 # View export data to understand what will be imported
-cat lowerdecklabs_oig_export.json | jq '.export_status'
+cat myorg_oig_export.json | jq '.export_status'
 
 # Import using okta_api_manager.py
 # Note: This is a placeholder - full import functionality may require custom implementation
 # For now, exported data can be used for documentation, drift detection, and manual recreation
 python3 scripts/okta_api_manager.py \
   --action apply \
-  --config lowerdecklabs_oig_export.json \
+  --config myorg_oig_export.json \
   --org-name <new-org-name> \
   --api-token <new-api-token>
 ```
@@ -343,7 +343,7 @@ python3 scripts/okta_api_manager.py \
 
 ---
 
-## Special Considerations for LowerDeckLabs
+## Special Considerations for MyOrg
 
 ### Okta Integration Network Apps
 
@@ -394,7 +394,7 @@ python3 scripts/okta_api_manager.py \
 ### Issue: Workflow requires approval but none requested
 
 **Solution:**
-1. Check GitHub Settings → Environments → LowerDeckLabs
+1. Check GitHub Settings → Environments → MyOrg
 2. Ensure "Required reviewers" includes active users
 3. Check email for approval notification
 
@@ -404,7 +404,7 @@ python3 scripts/okta_api_manager.py \
 1. Verify token has governance scopes:
    ```bash
    curl -H "Authorization: SSWS $OKTA_API_TOKEN" \
-     https://demo-lowerdecklabs.oktapreview.com/api/v1/governance/entitlements
+     https://demo-myorg.oktapreview.com/api/v1/governance/entitlements
    ```
 2. Token may have expired - generate new token
 3. Update GitHub secret with new token
@@ -442,14 +442,14 @@ python3 scripts/okta_api_manager.py \
 
 ## Workflow Files Reference
 
-### Created for LowerDeckLabs
+### Created for MyOrg
 
 ```
 .github/workflows/
-├── lowerdecklabs-import.yml      # Import all resources (safe)
-├── lowerdecklabs-export-oig.yml  # Export OIG resources (safe)
-├── lowerdecklabs-plan.yml        # Plan changes (safe)
-└── lowerdecklabs-apply.yml       # Apply changes (PROTECTED)
+├── myorg-import.yml      # Import all resources (safe)
+├── myorg-export-oig.yml  # Export OIG resources (safe)
+├── myorg-plan.yml        # Plan changes (safe)
+└── myorg-apply.yml       # Apply changes (PROTECTED)
 ```
 
 ### Scripts Used
@@ -475,20 +475,20 @@ scripts/
 
 ```bash
 # Import all resources
-Actions → LowerDeckLabs - Import Resources → Run
+Actions → MyOrg - Import Resources → Run
 
 # Export OIG resources
-Actions → LowerDeckLabs - Export OIG → Run
+Actions → MyOrg - Export OIG → Run
 
 # Plan changes
-Actions → LowerDeckLabs - Plan → Run
+Actions → MyOrg - Plan → Run
 ```
 
 ### Protected Operations (Requires Approval)
 
 ```bash
 # Apply terraform changes
-Actions → LowerDeckLabs - Apply → Run → WAIT FOR APPROVAL → Approves
+Actions → MyOrg - Apply → Run → WAIT FOR APPROVAL → Approves
 ```
 
 ### Local Operations
@@ -497,7 +497,7 @@ Actions → LowerDeckLabs - Apply → Run → WAIT FOR APPROVAL → Approves
 # Export OIG locally with modular options
 python3 scripts/okta_api_manager.py \
   --action export_oig \
-  --org-name demo-lowerdecklabs \
+  --org-name demo-myorg \
   --base-url oktapreview.com \
   --api-token $OKTA_API_TOKEN \
   --output oig_export.json \
@@ -515,7 +515,7 @@ terraform apply  # Dangerous - modifies tenant
 
 ## Next Steps
 
-1. ✅ **Create LowerDeckLabs environment** in GitHub UI (Settings → Environments)
+1. ✅ **Create MyOrg environment** in GitHub UI (Settings → Environments)
 2. ✅ **Add secrets** (OKTA_ORG_NAME, OKTA_BASE_URL, OKTA_API_TOKEN)
 3. ✅ **Configure protection rules** (required reviewers, wait timer)
 4. ✅ **Run initial import** to baseline current state

@@ -97,7 +97,7 @@ assign_label_values_to_resources(
 environments/{environment}/config/label_mappings.json
 ```
 
-**Example:** `environments/lowerdecklabs/config/label_mappings.json`
+**Example:** `environments/myorg/config/label_mappings.json`
 
 ### File Structure
 
@@ -289,7 +289,7 @@ Edit the `assignments` section:
         "orn:oktapreview:idp:00omx5xxhePEbjFNp1d7:apps:salesforce:0oamxiwg4zsrWaeJF1d7",
         "orn:oktapreview:idp:00omx5xxhePEbjFNp1d7:apps:workday:0oaq4iodcifSLp30Q1d7",
         "orn:oktapreview:idp:00omx5xxhePEbjFNp1d7:apps:successfactors:0oan4ssz4lmqTnQry1d7",
-        "orn:oktapreview:idp:00omx5xxhePEbjFNp1d7:apps:demo_lowerdecklabs_salesday_1:0oamxc34dudXXjGJT1d7"
+        "orn:oktapreview:idp:00omx5xxhePEbjFNp1d7:apps:demo_myorg_salesday_1:0oamxc34dudXXjGJT1d7"
       ]
     },
     "groups": {
@@ -356,7 +356,7 @@ Follow same process as adding new labels.
 ### Workflow Details
 
 **On Pull Request:**
-- Workflow: `lowerdecklabs-apply-labels-from-config.yml`
+- Workflow: `myorg-apply-labels-from-config.yml`
 - Trigger: Automatic when `label_mappings.json` changes
 - Mode: Always dry-run
 - Output: PR comment with preview of changes
@@ -372,7 +372,7 @@ Follow same process as adding new labels.
 **Via GitHub Actions UI:**
 ```
 1. Go to Actions tab
-2. Select "LowerDeckLabs - Apply Labels from Config"
+2. Select "MyOrg - Apply Labels from Config"
 3. Click "Run workflow"
 4. Select branch: main
 5. Set dry_run: false
@@ -383,12 +383,12 @@ Follow same process as adding new labels.
 ```bash
 # Dry run
 gh workflow run apply-labels-from-config.yml \
-  -f environment=lowerdecklabs \
+  -f environment=myorg \
   -f dry_run=true
 
 # Apply changes
 gh workflow run apply-labels-from-config.yml \
-  -f environment=lowerdecklabs \
+  -f environment=myorg \
   -f dry_run=false
 ```
 
@@ -469,12 +469,12 @@ Applies labels FROM config file TO Okta (deploy direction).
 ```bash
 # Dry run (preview)
 python3 scripts/apply_labels_from_config.py \
-  --config environments/lowerdecklabs/config/label_mappings.json \
+  --config environments/myorg/config/label_mappings.json \
   --dry-run
 
 # Apply changes
 python3 scripts/apply_labels_from_config.py \
-  --config environments/lowerdecklabs/config/label_mappings.json
+  --config environments/myorg/config/label_mappings.json
 ```
 
 **What it does:**
@@ -494,7 +494,7 @@ Syncs labels FROM Okta TO config file (import direction).
 **Usage:**
 ```bash
 python3 scripts/sync_label_mappings.py \
-  --output environments/lowerdecklabs/config/label_mappings.json
+  --output environments/myorg/config/label_mappings.json
 ```
 
 **What it does:**
@@ -546,7 +546,7 @@ python3 scripts/sync_label_mappings.py \
 **2. Submit PR:**
 ```bash
 git checkout -b feature/add-compliance-label
-git add environments/lowerdecklabs/config/label_mappings.json
+git add environments/myorg/config/label_mappings.json
 git commit -m "feat: Add Compliance label with SOX value"
 git push -u origin feature/add-compliance-label
 gh pr create --title "Add Compliance Label" --body "Adds SOX compliance label"
@@ -558,7 +558,7 @@ gh pr create --title "Add Compliance Label" --body "Adds SOX compliance label"
 
 **5. Apply to Okta:**
 ```bash
-gh workflow run apply-labels-from-config.yml -f environment=lowerdecklabs -f dry_run=false
+gh workflow run apply-labels-from-config.yml -f environment=myorg -f dry_run=false
 ```
 
 ### Example 2: Sync Labels from Okta
@@ -567,19 +567,19 @@ After making manual changes in Okta Admin UI:
 
 ```bash
 # Set environment variables
-export OKTA_ORG_NAME="lowerdecklabs"
+export OKTA_ORG_NAME="myorg"
 export OKTA_BASE_URL="oktapreview.com"
 export OKTA_API_TOKEN="00xxx..."
 
 # Run sync
 python3 scripts/sync_label_mappings.py \
-  --output environments/lowerdecklabs/config/label_mappings.json
+  --output environments/myorg/config/label_mappings.json
 
 # Review changes
-git diff environments/lowerdecklabs/config/label_mappings.json
+git diff environments/myorg/config/label_mappings.json
 
 # Commit if desired
-git add environments/lowerdecklabs/config/label_mappings.json
+git add environments/myorg/config/label_mappings.json
 git commit -m "chore: Sync labels from Okta"
 ```
 
@@ -588,7 +588,7 @@ git commit -m "chore: Sync labels from Okta"
 **1. Find group ID:**
 ```bash
 # Via Okta Admin Console URL
-# https://lowerdecklabs.oktapreview.com/admin/group/00g...
+# https://myorg.oktapreview.com/admin/group/00g...
 GROUP_ID="00g..."
 
 # Construct ORN
@@ -723,7 +723,7 @@ python3 scripts/sync_label_mappings.py \
   --output /tmp/current_labels.json
 
 # Compare with your config
-diff environments/lowerdecklabs/config/label_mappings.json /tmp/current_labels.json
+diff environments/myorg/config/label_mappings.json /tmp/current_labels.json
 ```
 
 ---

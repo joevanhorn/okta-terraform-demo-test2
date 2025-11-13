@@ -121,16 +121,16 @@ Edit Terraform files in the appropriate environment:
 
 ```bash
 # Example: Add new users
-vim environments/lowerdecklabs/terraform/users.tf
+vim environments/myorg/terraform/users.tf
 
 # Example: Update applications
-vim environments/lowerdecklabs/terraform/apps.tf
+vim environments/myorg/terraform/apps.tf
 ```
 
 **Always validate locally:**
 
 ```bash
-cd environments/lowerdecklabs/terraform
+cd environments/myorg/terraform
 
 # Format code
 terraform fmt
@@ -146,7 +146,7 @@ terraform plan
 
 ```bash
 # Stage changes
-git add environments/lowerdecklabs/terraform/
+git add environments/myorg/terraform/
 
 # Commit with descriptive message
 git commit -m "feat: Add 5 new marketing users
@@ -277,7 +277,7 @@ Plan: 1 to add, 0 to change, 0 to destroy.
 
 </details>
 
-*Environment: lowerdecklabs*
+*Environment: myorg*
 ```
 
 ### Terraform Plan (On Push to Main)
@@ -314,7 +314,7 @@ Same as PR workflow, but:
 ```bash
 # Option 1: Use GitHub CLI
 gh workflow run terraform-apply-with-approval.yml \
-  -f environment=lowerdecklabs
+  -f environment=myorg
 
 # Option 2: Use GitHub web interface
 # 1. Go to Actions tab
@@ -347,7 +347,7 @@ Approvers are configured in GitHub Settings > Environments:
 ```
 Repository Settings
   └─ Environments
-      └─ lowerdecklabs-approval
+      └─ myorg-approval
           └─ Required reviewers: [Add approvers here]
 ```
 
@@ -364,7 +364,7 @@ Repository Settings
 
 ```bash
 gh workflow run terraform-plan.yml \
-  -f environment=lowerdecklabs
+  -f environment=myorg
 ```
 
 ### 3. Terraform Apply (Legacy)
@@ -378,13 +378,13 @@ gh workflow run terraform-plan.yml \
 ```bash
 # Dry run (plan only, no apply)
 gh workflow run terraform-apply.yml \
-  -f environment=lowerdecklabs \
+  -f environment=myorg \
   -f dry_run=true \
   -f auto_approve=false
 
 # Real apply (USE WITH CAUTION)
 gh workflow run terraform-apply.yml \
-  -f environment=lowerdecklabs \
+  -f environment=myorg \
   -f dry_run=false \
   -f auto_approve=true
 ```
@@ -498,7 +498,7 @@ Closes #42
 Before pushing:
 
 ```bash
-cd environments/lowerdecklabs/terraform
+cd environments/myorg/terraform
 
 # Format
 terraform fmt
@@ -604,7 +604,7 @@ Error: Missing required argument
 ```bash
 # Wait 5-10 minutes for lock to expire
 # Or manually unlock (use with caution)
-cd environments/lowerdecklabs/terraform
+cd environments/myorg/terraform
 terraform force-unlock <lock-id>
 ```
 
@@ -686,8 +686,8 @@ Configure in: Settings > Environments
 
 | Environment | Approval Required | Approvers |
 |-------------|-------------------|-----------|
-| `lowerdecklabs` | No | N/A |
-| `lowerdecklabs-approval` | Yes | [Configure here] |
+| `myorg` | No | N/A |
+| `myorg-approval` | Yes | [Configure here] |
 | `production` | Yes | [Configure here] |
 | `production-approval` | Yes | [Configure here] |
 
@@ -796,7 +796,7 @@ Governance labels are managed through a dedicated GitOps workflow that provides 
 │                                                           │
 │  Command:                                                 │
 │  gh workflow run apply-labels-from-config.yml \          │
-│    -f environment=lowerdecklabs \                        │
+│    -f environment=myorg \                        │
 │    -f dry_run=false                                       │
 │                                                           │
 │  ✅ Create labels in Okta                                │
@@ -840,7 +840,7 @@ git checkout -b feature/label-crm-as-privileged
 #### 2. Edit Label Configuration
 
 ```bash
-vim environments/lowerdecklabs/config/label_mappings.json
+vim environments/myorg/config/label_mappings.json
 ```
 
 Add the resource ORN to the appropriate label assignment:
@@ -856,8 +856,8 @@ Add the resource ORN to the appropriate label assignment:
   "assignments": {
     "apps": {
       "Privileged": [
-        "orn:okta:idp:lowerdecklabs:apps:saml2:0oa123EXISTING",
-        "orn:okta:idp:lowerdecklabs:apps:oauth2:0oa456NEWAPP"
+        "orn:okta:idp:myorg:apps:saml2:0oa123EXISTING",
+        "orn:okta:idp:myorg:apps:oauth2:0oa456NEWAPP"
       ]
     }
   }
@@ -867,7 +867,7 @@ Add the resource ORN to the appropriate label assignment:
 #### 3. Commit and Push
 
 ```bash
-git add environments/lowerdecklabs/config/label_mappings.json
+git add environments/myorg/config/label_mappings.json
 git commit -m "feat: Label CRM app as Privileged
 
 Adding Privileged label to CRM application for enhanced
@@ -922,7 +922,7 @@ On merge to main, GitHub Actions automatically:
 ```bash
 # Trigger apply workflow manually
 gh workflow run apply-labels-from-config.yml \
-  -f environment=lowerdecklabs \
+  -f environment=myorg \
   -f dry_run=false
 
 # Monitor execution
@@ -1022,7 +1022,7 @@ The `label_mappings.json` file has this structure:
 - `contents: write` - Commit if needed
 - `actions: read` - Read workflow info
 
-**Environment:** LowerDeckLabs (with Okta API secrets)
+**Environment:** MyOrg (with Okta API secrets)
 
 **What It Does:**
 1. Checks out code
@@ -1072,9 +1072,9 @@ The deployment workflow (`apply-labels-from-config.yml`) uses GitHub Environment
    ```bash
    # If labels created manually in Okta
    python3 scripts/sync_label_mappings.py \
-     --output environments/lowerdecklabs/config/label_mappings.json
+     --output environments/myorg/config/label_mappings.json
 
-   git add environments/lowerdecklabs/config/label_mappings.json
+   git add environments/myorg/config/label_mappings.json
    git commit -m "chore: Sync label IDs from Okta"
    ```
 
@@ -1125,7 +1125,7 @@ The deployment workflow (`apply-labels-from-config.yml`) uses GitHub Environment
 - Wait 1-2 minutes for UI to sync
 - Verify via API query:
   ```bash
-  curl -X GET "https://lowerdecklabs.oktapreview.com/governance/api/v1/labels" \
+  curl -X GET "https://myorg.oktapreview.com/governance/api/v1/labels" \
     -H "Authorization: SSWS $OKTA_API_TOKEN"
   ```
 

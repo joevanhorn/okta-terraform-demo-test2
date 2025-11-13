@@ -53,7 +53,7 @@ brew install terraformer
 3. Clone your fork:
    ```bash
    git clone https://github.com/YOUR_USERNAME/okta-terraform-complete-demo.git
-   cd okta-terraform-complete-demo/environments/lowerdecklabs/terraform
+   cd okta-terraform-complete-demo/environments/myorg/terraform
    ```
 
 ### Step 2: Configure Credentials
@@ -261,7 +261,7 @@ git clone https://github.com/YOUR_USERNAME/okta-terraform-complete-demo.git
 cd okta-terraform-complete-demo
 
 # Option 1: Use existing environment structure
-cd environments/lowerdecklabs/terraform
+cd environments/myorg/terraform
 # Remove existing resource files (keep structure)
 rm *.tf
 
@@ -273,10 +273,10 @@ cd environments/mycompany/terraform
 ### Step 2: Copy Template Files
 
 ```bash
-# If starting fresh, copy only the infrastructure files from lowerdecklabs
-cp ../../lowerdecklabs/terraform/provider.tf .
-cp ../../lowerdecklabs/terraform/variables.tf .
-cp ../../lowerdecklabs/terraform/terraform.tfvars.example terraform.tfvars
+# If starting fresh, copy only the infrastructure files from myorg
+cp ../../myorg/terraform/provider.tf .
+cp ../../myorg/terraform/variables.tf .
+cp ../../myorg/terraform/terraform.tfvars.example terraform.tfvars
 ```
 
 ### Step 3: Configure

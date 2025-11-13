@@ -57,7 +57,7 @@ Instead:
 
 ### Why This Demo Includes Them
 
-This is a **demo repository** using a **non-production preview tenant** (lowerdecklabs.oktapreview.com):
+This is a **demo repository** using a **non-production preview tenant** (myorg.oktapreview.com):
 - No customer data
 - No production systems
 - Used for testing and demonstration
@@ -70,17 +70,17 @@ This is a **demo repository** using a **non-production preview tenant** (lowerde
 ### View Import Data
 ```bash
 # View entitlement bundles
-cat environments/lowerdecklabs/imports/entitlements.json | jq '.entitlementBundles[]'
+cat environments/myorg/imports/entitlements.json | jq '.entitlementBundles[]'
 
 # View access reviews
-cat environments/lowerdecklabs/imports/reviews.json | jq '.reviewDefinitions[]'
+cat environments/myorg/imports/reviews.json | jq '.reviewDefinitions[]'
 ```
 
 ### Re-import from Okta
 ```bash
 # Import fresh data (overwrites these files)
 gh workflow run import-all-resources.yml \
-  -f tenant_environment=LowerDeckLabs \
+  -f tenant_environment=MyOrg \
   -f update_terraform=true \
   -f commit_changes=true
 ```

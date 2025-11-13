@@ -106,11 +106,11 @@ If you have existing local Terraform state files, migrate them to S3.
 
 #### For Each Environment:
 
-**LowerDeckLabs Example:**
+**MyOrg Example:**
 
 ```bash
 # Navigate to environment
-cd environments/lowerdecklabs/terraform
+cd environments/myorg/terraform
 
 # Check if you have existing state
 ls -la terraform.tfstate
@@ -145,7 +145,7 @@ Do you want to copy existing state to the new backend?
 
 ```bash
 # List state in S3
-aws s3 ls s3://okta-terraform-demo/Okta-GitOps/lowerdecklabs/
+aws s3 ls s3://okta-terraform-demo/Okta-GitOps/myorg/
 
 # Should show:
 # terraform.tfstate
@@ -225,7 +225,7 @@ Once migration is verified, clean up local state files (they're now in S3).
 aws s3 ls s3://okta-terraform-demo/Okta-GitOps/ --recursive
 
 # For each environment with migrated state
-cd environments/lowerdecklabs/terraform
+cd environments/myorg/terraform
 
 # Remove local state files (they're backed up in S3 versions)
 rm -f terraform.tfstate
@@ -256,7 +256,7 @@ Your state files are organized by environment in S3:
 ```
 s3://okta-terraform-demo/
 └── Okta-GitOps/
-    ├── lowerdecklabs/
+    ├── myorg/
     │   └── terraform.tfstate
     ├── production/
     │   └── terraform.tfstate
@@ -285,14 +285,14 @@ Open two terminal windows:
 
 **Terminal 1:**
 ```bash
-cd environments/lowerdecklabs/terraform
+cd environments/myorg/terraform
 terraform apply
 # Don't confirm yet - leave it waiting for confirmation
 ```
 
 **Terminal 2 (while Terminal 1 is waiting):**
 ```bash
-cd environments/lowerdecklabs/terraform
+cd environments/myorg/terraform
 terraform plan
 ```
 
@@ -303,7 +303,7 @@ Error acquiring the state lock
 Error message: ConditionalCheckFailedException: The conditional request failed
 Lock Info:
   ID:        abc-123-def-456
-  Path:      okta-terraform-demo/Okta-GitOps/lowerdecklabs/terraform.tfstate
+  Path:      okta-terraform-demo/Okta-GitOps/myorg/terraform.tfstate
   Operation: OperationTypeApply
   Who:       user@hostname
   Version:   1.9.0
@@ -337,7 +337,7 @@ S3 versioning provides state history for rollback if needed:
 ```bash
 aws s3api list-object-versions \
   --bucket okta-terraform-demo \
-  --prefix Okta-GitOps/lowerdecklabs/terraform.tfstate
+  --prefix Okta-GitOps/myorg/terraform.tfstate
 ```
 
 ### Restore Previous State Version
@@ -347,13 +347,13 @@ aws s3api list-object-versions \
 ```bash
 # Download current state first (backup)
 aws s3 cp \
-  s3://okta-terraform-demo/Okta-GitOps/lowerdecklabs/terraform.tfstate \
+  s3://okta-terraform-demo/Okta-GitOps/myorg/terraform.tfstate \
   terraform.tfstate.before-restore
 
 # Get specific version
 aws s3api get-object \
   --bucket okta-terraform-demo \
-  --key Okta-GitOps/lowerdecklabs/terraform.tfstate \
+  --key Okta-GitOps/myorg/terraform.tfstate \
   --version-id <VERSION_ID> \
   terraform.tfstate
 
@@ -418,7 +418,7 @@ aws dynamodb scan --table-name okta-terraform-state-lock
 # Delete specific lock (use LockID from error)
 aws dynamodb delete-item \
   --table-name okta-terraform-state-lock \
-  --key '{"LockID": {"S": "okta-terraform-demo/Okta-GitOps/lowerdecklabs/terraform.tfstate"}}'
+  --key '{"LockID": {"S": "okta-terraform-demo/Okta-GitOps/myorg/terraform.tfstate"}}'
 ```
 
 ### Error: "Bucket does not exist"
@@ -436,7 +436,7 @@ Error: Failed to get existing workspaces: S3 bucket does not exist.
 aws s3 ls s3://okta-terraform-demo
 
 # If not found, check Terraform backend config
-cat environments/lowerdecklabs/terraform/provider.tf
+cat environments/myorg/terraform/provider.tf
 
 # Should match:
 #   bucket = "okta-terraform-demo"
@@ -465,7 +465,7 @@ terraform init -reconfigure
 # If state is at wrong path, copy it
 aws s3 cp \
   s3://okta-terraform-demo/OLD_PATH \
-  s3://okta-terraform-demo/Okta-GitOps/lowerdecklabs/terraform.tfstate
+  s3://okta-terraform-demo/Okta-GitOps/myorg/terraform.tfstate
 ```
 
 ### GitHub Actions Workflow Fails to Authenticate
@@ -564,7 +564,7 @@ If you need to rollback to local state:
 ### Step 1: Download State from S3
 
 ```bash
-cd environments/lowerdecklabs/terraform
+cd environments/myorg/terraform
 
 # Download current state from S3
 terraform state pull > terraform.tfstate
@@ -577,7 +577,7 @@ Edit `provider.tf` and comment out the backend block:
 ```hcl
 # backend "s3" {
 #   bucket         = "okta-terraform-demo"
-#   key            = "Okta-GitOps/lowerdecklabs/terraform.tfstate"
+#   key            = "Okta-GitOps/myorg/terraform.tfstate"
 #   region         = "us-east-1"
 #   encrypt        = true
 #   dynamodb_table = "okta-terraform-state-lock"

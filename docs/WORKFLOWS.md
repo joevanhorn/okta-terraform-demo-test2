@@ -12,7 +12,7 @@ This document describes all GitHub Actions workflows in this repository.
 **Trigger:** Manual (`workflow_dispatch`)
 
 **Parameters:**
-- `environment` - Target environment (lowerdecklabs, production, etc.) **REQUIRED**
+- `environment` - Target environment (myorg, production, etc.) **REQUIRED**
 - `dry_run` - Set to `true` to preview changes without applying (default: `true`)
 
 **What It Does:**
@@ -24,10 +24,10 @@ This document describes all GitHub Actions workflows in this repository.
 **Usage:**
 ```bash
 # Dry run
-gh workflow run apply-admin-labels.yml -f environment=lowerdecklabs -f dry_run=true
+gh workflow run apply-admin-labels.yml -f environment=myorg -f dry_run=true
 
 # Apply labels
-gh workflow run apply-admin-labels.yml -f environment=lowerdecklabs -f dry_run=false
+gh workflow run apply-admin-labels.yml -f environment=myorg -f dry_run=false
 ```
 
 **Results:** Creates 16 admin entitlements labeled as Privileged
@@ -42,7 +42,7 @@ gh workflow run apply-admin-labels.yml -f environment=lowerdecklabs -f dry_run=f
 **Trigger:** Manual (`workflow_dispatch`)
 
 **Parameters:**
-- `environment` - Target environment (lowerdecklabs, production, etc.) **REQUIRED**
+- `environment` - Target environment (myorg, production, etc.) **REQUIRED**
 
 **What It Does:**
 1. Tests API connection
@@ -54,7 +54,7 @@ gh workflow run apply-admin-labels.yml -f environment=lowerdecklabs -f dry_run=f
 
 **Usage:**
 ```bash
-gh workflow run validate-labels.yml -f environment=lowerdecklabs
+gh workflow run validate-labels.yml -f environment=myorg
 ```
 
 **Validation Checks:**
@@ -74,7 +74,7 @@ gh workflow run validate-labels.yml -f environment=lowerdecklabs
 **Trigger:** Manual (`workflow_dispatch`)
 
 **Parameters:**
-- `environment` - Target environment (lowerdecklabs, production, etc.) **REQUIRED**
+- `environment` - Target environment (myorg, production, etc.) **REQUIRED**
 - `export_labels` - Export governance labels (default: `true`)
 - `export_owners` - Export resource owners (default: `false`)
 - `resource_orns` - Space-separated list of resource ORNs for owner export (optional)
@@ -89,27 +89,27 @@ gh workflow run validate-labels.yml -f environment=lowerdecklabs
 **Usage:**
 ```bash
 # Export labels only (default)
-gh workflow run export-oig.yml -f environment=lowerdecklabs
+gh workflow run export-oig.yml -f environment=myorg
 
 # Export labels only (explicit)
-gh workflow run export-oig.yml -f environment=lowerdecklabs -f export_labels=true -f export_owners=false
+gh workflow run export-oig.yml -f environment=myorg -f export_labels=true -f export_owners=false
 
 # Export both labels and owners (requires resource ORNs)
 gh workflow run export-oig.yml \
-  -f environment=lowerdecklabs \
+  -f environment=myorg \
   -f export_labels=true \
   -f export_owners=true \
   -f resource_orns="orn:okta:idp:org:apps:oauth2:0oa123 orn:okta:directory:org:groups:00g456"
 
 # Export owners only for specific resources
 gh workflow run export-oig.yml \
-  -f environment=lowerdecklabs \
+  -f environment=myorg \
   -f export_labels=false \
   -f export_owners=true \
   -f resource_orns="orn:okta:governance:org:entitlement-bundles:enb789"
 ```
 
-**Output:** JSON file in `oig-exports/lowerdecklabs/`
+**Output:** JSON file in `oig-exports/myorg/`
 
 **Note:** Resource owners export requires specific resource ORNs to be provided via the `resource_orns` parameter.
 
@@ -123,7 +123,7 @@ gh workflow run export-oig.yml \
 **Trigger:** Manual (`workflow_dispatch`)
 
 **Parameters:**
-- `environment` - Target environment (lowerdecklabs, production, etc.) **REQUIRED**
+- `environment` - Target environment (myorg, production, etc.) **REQUIRED**
 - `dry_run` - Preview changes without applying (default: `true`)
 
 **What It Does:**
@@ -135,10 +135,10 @@ gh workflow run export-oig.yml \
 **Usage:**
 ```bash
 # Dry run (preview changes)
-gh workflow run apply-owners.yml -f environment=lowerdecklabs -f dry_run=true
+gh workflow run apply-owners.yml -f environment=myorg -f dry_run=true
 
 # Apply owners
-gh workflow run apply-owners.yml -f environment=lowerdecklabs -f dry_run=false
+gh workflow run apply-owners.yml -f environment=myorg -f dry_run=false
 ```
 
 **Prerequisites:**
@@ -157,7 +157,7 @@ gh workflow run apply-owners.yml -f environment=lowerdecklabs -f dry_run=false
 **Trigger:** Manual (`workflow_dispatch`)
 
 **Parameters:**
-- `tenant_environment` - Target environment (LowerDeckLabs, Production, etc.) **REQUIRED**
+- `tenant_environment` - Target environment (MyOrg, Production, etc.) **REQUIRED**
 - `update_terraform` - Automatically update production-ready TF files (default: `false`)
 - `commit_changes` - Commit imported files to repository (default: `false`)
 
@@ -172,24 +172,24 @@ gh workflow run apply-owners.yml -f environment=lowerdecklabs -f dry_run=false
 **Usage:**
 ```bash
 # Import and review (doesn't update or commit)
-gh workflow run import-all-resources.yml -f tenant_environment=LowerDeckLabs
+gh workflow run import-all-resources.yml -f tenant_environment=MyOrg
 
 # Import and automatically update Terraform files
 gh workflow run import-all-resources.yml \
-  -f tenant_environment=LowerDeckLabs \
+  -f tenant_environment=MyOrg \
   -f update_terraform=true
 
 # Import, update, and commit
 gh workflow run import-all-resources.yml \
-  -f tenant_environment=LowerDeckLabs \
+  -f tenant_environment=MyOrg \
   -f update_terraform=true \
   -f commit_changes=true
 ```
 
 **Note:** This workflow replaces the following archived workflows:
-- `lowerdecklabs-import.yml`
-- `lowerdecklabs-import-oig.yml`
-- `lowerdecklabs-import-complete.yml`
+- `myorg-import.yml`
+- `myorg-import-oig.yml`
+- `myorg-import-complete.yml`
 
 Use `import-all-resources.yml` for all import operations going forward.
 
@@ -203,7 +203,7 @@ Use `import-all-resources.yml` for all import operations going forward.
 **Trigger:** Manual (`workflow_dispatch`)
 
 **Parameters:**
-- `environment` - Target environment (lowerdecklabs, production, etc.) **REQUIRED**
+- `environment` - Target environment (myorg, production, etc.) **REQUIRED**
 
 **What It Does:**
 1. Creates initial OIG configuration
@@ -213,7 +213,7 @@ Use `import-all-resources.yml` for all import operations going forward.
 
 **Usage:**
 ```bash
-gh workflow run governance-setup.yml -f environment=lowerdecklabs
+gh workflow run governance-setup.yml -f environment=myorg
 ```
 
 ---
@@ -222,8 +222,8 @@ gh workflow run governance-setup.yml -f environment=lowerdecklabs
 
 These workflows were used during development and are kept for reference:
 
-### LowerDeckLabs - Investigate Labels API
-**File:** `.github/workflows/lowerdecklabs-investigate-labels-api.yml`
+### MyOrg - Investigate Labels API
+**File:** `.github/workflows/myorg-investigate-labels-api.yml`
 
 **Purpose:** Deep investigation of Labels API to troubleshoot 405 errors
 
@@ -236,8 +236,8 @@ These workflows were used during development and are kept for reference:
 
 ---
 
-### LowerDeckLabs - Test Label Endpoints
-**File:** `.github/workflows/lowerdecklabs-test-label-endpoints.yml`
+### MyOrg - Test Label Endpoints
+**File:** `.github/workflows/myorg-test-label-endpoints.yml`
 
 **Purpose:** Test various endpoint patterns to find correct API syntax
 
@@ -258,7 +258,7 @@ These workflows were used during development and are kept for reference:
 
 ### Environment Secrets Required
 
-All environment-specific workflows require these secrets to be configured in the corresponding GitHub environment (e.g., `LowerDeckLabs`, `Production`):
+All environment-specific workflows require these secrets to be configured in the corresponding GitHub environment (e.g., `MyOrg`, `Production`):
 
 - `OKTA_API_TOKEN` - API token with governance scopes
 - `OKTA_ORG_NAME` - Okta organization name
@@ -305,7 +305,7 @@ Most workflows follow this pattern:
 
 When creating new workflows:
 
-1. Use the `LowerDeckLabs` environment
+1. Use the `MyOrg` environment
 2. Follow the standard structure pattern
 3. Include comprehensive error handling
 4. Upload artifacts for debugging

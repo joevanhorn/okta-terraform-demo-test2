@@ -568,7 +568,7 @@ Want to see this template in action with a real, configured environment?
 👉 **[okta-terraform-complete-demo](https://github.com/joevanhorn/okta-terraform-complete-demo)**
 
 This working repository demonstrates:
-- Fully configured LowerDeckLabs demo environment
+- Fully configured MyOrg demo environment
 - 31 entitlement bundles
 - 200 access review campaigns
 - Complete governance label setup

@@ -502,7 +502,7 @@ You'll see this on the left side:
 ```
 okta-terraform-complete-demo/
 ├── environments/          ← Different Okta setups
-│   └── lowerdecklabs/    ← The demo we'll use
+│   └── myorg/    ← The demo we'll use
 │       ├── terraform/    ← The Terraform code files
 │       ├── imports/      ← Data imported from Okta
 │       └── config/       ← Configuration files
@@ -513,7 +513,7 @@ okta-terraform-complete-demo/
 
 **Think of it like:**
 - `environments/` = Different "recipes" for different situations
-- `lowerdecklabs/` = The specific recipe we're using today
+- `myorg/` = The specific recipe we're using today
 - `terraform/` = The actual recipe instructions
 - `docs/` = The cookbook with explanations
 
@@ -525,7 +525,7 @@ Each `environments/` subdirectory represents a **separate Okta organization**. N
 
 ### Key Files to Know
 
-In `environments/lowerdecklabs/terraform/`, you'll find:
+In `environments/myorg/terraform/`, you'll find:
 
 - **`provider.tf`** - Tells Terraform to talk to Okta (version 6.4.0+ required)
 - **`variables.tf`** - Settings you can customize
@@ -536,7 +536,7 @@ In `environments/lowerdecklabs/terraform/`, you'll find:
 - **`group.tf`** - Example code to create groups
 - **`app_oauth.tf`** - Example code to create applications
 
-**Note:** The actual lowerdecklabs environment may have different files depending on what's been imported. For learning purposes, you'll create these example files.
+**Note:** The actual myorg environment may have different files depending on what's been imported. For learning purposes, you'll create these example files.
 
 ---
 
@@ -583,7 +583,7 @@ Look at the URL again:
 
 Now we'll create a file with your Okta details.
 
-1. In Visual Studio Code, navigate to: `environments/lowerdecklabs/terraform/`
+1. In Visual Studio Code, navigate to: `environments/myorg/terraform/`
 
 2. Look for a file called `terraform.tfvars.example`
 
@@ -718,7 +718,7 @@ Want to see what was created? Let's look in the AWS Console:
      - **Versioning:** Enabled (shown at top)
      - **Encryption:** Enabled (shown in Properties tab)
    - The bucket might be empty now (state files created when you run Terraform)
-   - After running Terraform, you'll see: `Okta-GitOps/lowerdecklabs/terraform.tfstate`
+   - After running Terraform, you'll see: `Okta-GitOps/myorg/terraform.tfstate`
 
 **Screenshot Tip:** Take a screenshot of your empty bucket - you can compare it later after Terraform runs!
 
@@ -778,7 +778,7 @@ Now the fun part - actually using Terraform!
 In your terminal:
 
 ```bash
-cd ~/okta-terraform-complete-demo/environments/lowerdecklabs/terraform
+cd ~/okta-terraform-complete-demo/environments/myorg/terraform
 ```
 
 **What this does:** Goes to the folder with the Terraform code
@@ -1104,7 +1104,7 @@ Destroy complete! Resources: 15 destroyed.
 **What it means:** Your `terraform.tfvars` file has issues
 
 **Solution:**
-1. Check that `terraform.tfvars` exists in `environments/lowerdecklabs/terraform/`
+1. Check that `terraform.tfvars` exists in `environments/myorg/terraform/`
 2. Verify all three values are filled in:
    - `okta_org_name`
    - `okta_base_url`
@@ -1243,7 +1243,7 @@ This repository includes automated workflows for importing OIG resources:
 
 1. **View Entitlement Bundles:**
    ```bash
-   cd environments/lowerdecklabs/imports
+   cd environments/myorg/imports
    cat entitlements.json | head -20
    ```
 
@@ -1314,7 +1314,7 @@ This repository uses a modern GitOps approach for managing governance labels:
 5. No audit trail, no version control
 
 **The GitOps Way (Automated):**
-1. Edit `environments/lowerdecklabs/config/label_mappings.json`
+1. Edit `environments/myorg/config/label_mappings.json`
 2. Create a Pull Request
 3. Automatic validation runs (syntax and ORN format check)
 4. Merge to main → Automatic dry-run shows what will change
@@ -1325,23 +1325,23 @@ This repository uses a modern GitOps approach for managing governance labels:
 
 1. **View Current Labels:**
    ```bash
-   cat environments/lowerdecklabs/config/label_mappings.json | jq '.labels'
+   cat environments/myorg/config/label_mappings.json | jq '.labels'
    ```
 
 2. **Add a New Label Assignment:**
    ```bash
    # Edit the configuration file
-   vim environments/lowerdecklabs/config/label_mappings.json
+   vim environments/myorg/config/label_mappings.json
 
    # Example: Add "Privileged" label to an app
    # Under "assignments" → "apps" → "Privileged", add the app ORN:
-   # "orn:okta:idp:lowerdecklabs:apps:oauth2:0oa123456789"
+   # "orn:okta:idp:myorg:apps:oauth2:0oa123456789"
    ```
 
 3. **Create Pull Request with Your Changes:**
    ```bash
    git checkout -b feature/add-privileged-label
-   git add environments/lowerdecklabs/config/label_mappings.json
+   git add environments/myorg/config/label_mappings.json
    git commit -m "feat: Label CRM app as Privileged"
    git push -u origin feature/add-privileged-label
 
@@ -1362,7 +1362,7 @@ This repository uses a modern GitOps approach for managing governance labels:
    - Merge PR to main
 
 6. **Automatic Dry-Run:**
-   - On merge to main, `lowerdecklabs-apply-labels-from-config.yml` runs
+   - On merge to main, `myorg-apply-labels-from-config.yml` runs
    - Automatically runs in **dry-run mode** (no changes made)
    - Connects to Okta API and validates labels exist
    - Shows what would be created/assigned
@@ -1372,7 +1372,7 @@ This repository uses a modern GitOps approach for managing governance labels:
    ```bash
    # After reviewing dry-run results, manually trigger apply
    gh workflow run apply-labels-from-config.yml \
-     -f environment=lowerdecklabs \
+     -f environment=myorg \
      -f dry_run=false
    ```
 
@@ -1499,7 +1499,7 @@ And the AI generates all 50 user resources in seconds!
 6. **Copy to Your Environment:**
 
    ```bash
-   cd environments/lowerdecklabs/terraform
+   cd environments/myorg/terraform
 
    # Paste generated users.tf content into users.tf
    # Paste generated groups.tf content into groups.tf
@@ -1563,7 +1563,7 @@ python generate.py --interactive --provider gemini
 python generate.py \
   --prompt "Create 10 marketing users and a Salesforce app" \
   --provider gemini \
-  --output ../environments/lowerdecklabs/terraform/marketing.tf
+  --output ../environments/myorg/terraform/marketing.tf
 ```
 
 **Why This Matters for Sales:**

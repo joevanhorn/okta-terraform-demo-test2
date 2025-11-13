@@ -8,7 +8,7 @@ This document describes the validation of the Okta Identity Governance (IGA) Lab
 
 ## 🎯 Expected Environment State
 
-For the LowerDeckLabs environment:
+For the MyOrg environment:
 - **Existing Labels**: 2 labels already created
 - **Resource Assignments**: 0 (no resources assigned yet)
 - **Goal**: Validate import, then apply labels to admin entitlements
@@ -141,7 +141,7 @@ We provide a comprehensive validation script to test Labels API integration:
 ```bash
 # Set credentials
 export OKTA_API_TOKEN="your-token"
-export OKTA_ORG_NAME="demo-lowerdecklabs"
+export OKTA_ORG_NAME="demo-myorg"
 export OKTA_BASE_URL="oktapreview.com"
 
 # Run validation
@@ -162,7 +162,7 @@ python3 scripts/validate_labels_api.py --validate-imports
 
 ### Expected Results
 
-For LowerDeckLabs environment:
+For MyOrg environment:
 ```
 ✅ API Connection: SUCCESS
 ✅ List Labels: SUCCESS
@@ -178,7 +178,7 @@ Run the validation workflow to verify we can access existing labels:
 
 ```bash
 # Via GitHub Actions
-Go to: Actions → "LowerDeckLabs - Validate Labels API" → Run workflow
+Go to: Actions → "MyOrg - Validate Labels API" → Run workflow
 ```
 
 **Expected Output:**
@@ -198,14 +198,14 @@ python3 scripts/okta_api_manager.py \
   --output current_labels.json
 
 # Via GitHub Actions
-Actions → "LowerDeckLabs - Export OIG Labels" → Run workflow
+Actions → "MyOrg - Export OIG Labels" → Run workflow
 ```
 
 **Export Structure:**
 ```json
 {
   "export_date": "2025-11-07T21:28:31Z",
-  "okta_org": "demo-lowerdecklabs",
+  "okta_org": "demo-myorg",
   "export_status": {
     "labels": "success"
   },
@@ -263,7 +263,7 @@ Apply labels to your entitlements:
 
 ```bash
 # Via GitHub Actions
-Actions → "LowerDeckLabs - Apply OIG Labels" → Run workflow
+Actions → "MyOrg - Apply OIG Labels" → Run workflow
 
 # Local
 python3 scripts/okta_api_manager.py \

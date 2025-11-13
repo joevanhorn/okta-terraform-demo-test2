@@ -7,7 +7,7 @@ This document provides context about the Okta Terraform Complete Demo repository
 ```
 okta-terraform-complete-demo/
 ├── environments/
-│   ├── lowerdecklabs/          # Example tenant environment
+│   ├── myorg/          # Example tenant environment
 │   │   ├── terraform/          # Terraform configurations (Okta resources)
 │   │   │   ├── provider.tf     # Okta provider configuration
 │   │   │   ├── variables.tf    # Variable definitions
@@ -118,9 +118,9 @@ When generating code for a specific environment, use:
 - Imports: `environments/{env}/imports/`
 - Config: `environments/{env}/config/`
 
-Example for lowerdecklabs:
-- `environments/lowerdecklabs/terraform/users.tf` (Okta resources)
-- `environments/lowerdecklabs/infrastructure/vpc.tf` (AWS resources)
+Example for myorg:
+- `environments/myorg/terraform/users.tf` (Okta resources)
+- `environments/myorg/infrastructure/vpc.tf` (AWS resources)
 
 ## Infrastructure Patterns
 

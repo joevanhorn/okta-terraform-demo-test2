@@ -19,7 +19,7 @@ okta-terraform-complete-demo/
 │       └── question.md
 │
 ├── environments/
-│   ├── lowerdecklabs/           # Primary demo tenant
+│   ├── myorg/           # Primary demo tenant
 │   │   ├── terraform/           # Terraform configurations
 │   │   │   ├── oig_entitlements.tf
 │   │   │   ├── oig_reviews.tf
@@ -49,7 +49,7 @@ okta-terraform-complete-demo/
 │   ├── API_MANAGEMENT.md
 │   ├── COMPLETE_SOLUTION.md
 │   ├── CONTRIBUTING.md
-│   ├── LOWERDECKLABS_SETUP.md    # LowerDeckLabs environment setup guide
+│   ├── ENVIRONMENT_SETUP_EXAMPLE.md    # MyOrg environment setup guide
 │   ├── OIG_MANUAL_IMPORT.md
 │   ├── PROJECT_STRUCTURE.md
 │   ├── TERRAFORMER.md
@@ -92,7 +92,7 @@ GitHub Actions workflows for automation (environment-agnostic):
 
 ### environments/
 Environment-specific Okta configurations organized by tenant:
-- **lowerdecklabs/** - Primary demo tenant (oktapreview.com)
+- **myorg/** - Primary demo tenant (oktapreview.com)
   - `terraform/` - Terraform configurations for all resources
   - `imports/` - Raw API import data (JSON)
   - `config/` - Resource owners, labels, and API configs
@@ -110,7 +110,7 @@ Python automation scripts:
 
 ### docs/
 Comprehensive documentation:
-- **LOWERDECKLABS_SETUP.md** - Setup guide for LowerDeckLabs environment
+- **ENVIRONMENT_SETUP_EXAMPLE.md** - Setup guide for MyOrg environment
 - **API_MANAGEMENT.md** - API-based resource management guide
 - **OIG_MANUAL_IMPORT.md** - Manual OIG import procedures
 - **TERRAFORMER.md** - Terraformer usage guide

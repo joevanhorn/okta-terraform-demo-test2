@@ -39,7 +39,7 @@ This document provides a comprehensive manual validation plan for testing the Ok
 
 - [ ] **Okta Provider Version**
   ```bash
-  cd environments/lowerdecklabs/terraform
+  cd environments/myorg/terraform
   terraform version
   # Expected: provider registry.terraform.io/okta/okta v6.4.0+
   ```
@@ -81,7 +81,7 @@ This document provides a comprehensive manual validation plan for testing the Ok
 ### 1.2 Access Verification
 
 - [ ] **Okta Admin Console Access**
-  - Navigate to: https://lowerdecklabs.oktapreview.com/admin
+  - Navigate to: https://myorg.oktapreview.com/admin
   - ✅ Pass: Can log in with super admin privileges
   - ❌ Fail: Cannot access or insufficient permissions
 
@@ -93,7 +93,7 @@ This document provides a comprehensive manual validation plan for testing the Ok
 - [ ] **GitHub Environments Configured**
   ```bash
   gh api repos/joevanhorn/okta-terraform-complete-demo/environments | jq -r '.environments[].name'
-  # Expected: LowerDeckLabs, Production, Staging, Development
+  # Expected: MyOrg, Production, Staging, Development
   ```
   - ✅ Pass: All 4 environments exist
   - ❌ Fail: Missing environments
@@ -108,8 +108,8 @@ This document provides a comprehensive manual validation plan for testing the Ok
   - ❌ Fail: Missing or invalid format
   - **Expected Format:** `arn:aws:iam::ACCOUNT_ID:role/GitHubActions-OktaTerraform`
 
-- [ ] **LowerDeckLabs Environment Secrets Present**
-  - Check in GitHub: Settings → Environments → LowerDeckLabs
+- [ ] **MyOrg Environment Secrets Present**
+  - Check in GitHub: Settings → Environments → MyOrg
   - Required secrets:
     - `OKTA_API_TOKEN`
     - `OKTA_ORG_NAME`
@@ -120,7 +120,7 @@ This document provides a comprehensive manual validation plan for testing the Ok
 - [ ] **API Token Permissions**
   ```bash
   # Test API token with a simple call
-  curl -X GET "https://lowerdecklabs.oktapreview.com/api/v1/users?limit=1" \
+  curl -X GET "https://myorg.oktapreview.com/api/v1/users?limit=1" \
     -H "Authorization: SSWS ${OKTA_API_TOKEN}" \
     -H "Accept: application/json"
   ```
@@ -150,7 +150,7 @@ This document provides a comprehensive manual validation plan for testing the Ok
 
 - [ ] **Environment Structure**
   ```bash
-  ls -la environments/lowerdecklabs/
+  ls -la environments/myorg/
   # Expected:
   # - terraform/
   # - imports/
@@ -164,7 +164,7 @@ This document provides a comprehensive manual validation plan for testing the Ok
 
 - [ ] **Terraform Configuration**
   ```bash
-  cd environments/lowerdecklabs/terraform
+  cd environments/myorg/terraform
   ls *.tf
   # Expected core files:
   # - provider.tf (with provider >= 6.4.0)
@@ -173,7 +173,7 @@ This document provides a comprehensive manual validation plan for testing the Ok
   # - oig_entitlements.tf (OIG resources)
   #
   # NOTE: Standard Okta resources (apps, users, groups) are imported
-  # via terraformer into environments/lowerdecklabs/imports/ directory
+  # via terraformer into environments/myorg/imports/ directory
   # and should be consolidated into terraform/ after review
   ```
   - ✅ Pass: Core terraform files present
@@ -209,24 +209,24 @@ This document provides a comprehensive manual validation plan for testing the Ok
 
 - [ ] **Verify No Cross-Environment Resources**
   ```bash
-  # Lowerdecklabs should only have lowerdecklabs.oktapreview.com resources
-  cd environments/lowerdecklabs/terraform
+  # Lowerdecklabs should only have myorg.oktapreview.com resources
+  cd environments/myorg/terraform
   grep -r "okta.com" . && echo "FAIL: Found okta.com references" || echo "PASS"
   grep -r "dev-" . && echo "FAIL: Found dev org references" || echo "PASS"
 
   # Expected: No references to other orgs
   ```
-  - ✅ Pass: Only lowerdecklabs.oktapreview.com references found
+  - ✅ Pass: Only myorg.oktapreview.com references found
   - ❌ Fail: References to other orgs detected
 
 - [ ] **Verify Environment-Specific Secrets**
   ```bash
   # Check GitHub environments are configured
   gh api repos/joevanhorn/okta-terraform-complete-demo/environments \
-    | jq -r '.environments[] | select(.name=="LowerDeckLabs") | .name'
-  # Expected: LowerDeckLabs
+    | jq -r '.environments[] | select(.name=="MyOrg") | .name'
+  # Expected: MyOrg
   ```
-  - ✅ Pass: LowerDeckLabs environment exists with secrets
+  - ✅ Pass: MyOrg environment exists with secrets
   - ❌ Fail: Environment missing or misconfigured
 
 - [ ] **Verify Workflow Environment Specification**
@@ -240,12 +240,12 @@ This document provides a comprehensive manual validation plan for testing the Ok
 
 - [ ] **Test Environment Isolation in Practice**
   ```bash
-  # Trigger a terraform plan - should use LowerDeckLabs secrets
+  # Trigger a terraform plan - should use MyOrg secrets
   gh workflow run terraform-plan.yml
 
-  # Monitor and verify it uses lowerdecklabs.oktapreview.com
+  # Monitor and verify it uses myorg.oktapreview.com
   gh run watch <RUN_ID>
-  # Check logs for: "Configured for org: lowerdecklabs"
+  # Check logs for: "Configured for org: myorg"
   ```
   - ✅ Pass: Workflow uses correct environment secrets
   - ❌ Fail: Wrong org detected or secrets not applied
@@ -261,7 +261,7 @@ This document provides a comprehensive manual validation plan for testing the Ok
 - [ ] **Trigger Workflow**
   ```bash
   gh workflow run import-all-resources.yml \
-    -f tenant_environment=LowerDeckLabs \
+    -f tenant_environment=MyOrg \
     -f update_terraform=false \
     -f commit_changes=false
   ```
@@ -299,11 +299,11 @@ This document provides a comprehensive manual validation plan for testing the Ok
   ```bash
   # Count entitlement bundles
   jq '. | length' import-results-*/imports/entitlements.json
-  # Expected: 31 (based on current LowerDeckLabs tenant)
+  # Expected: 31 (based on current MyOrg tenant)
 
   # Count reviews
   jq '. | length' import-results-*/imports/reviews.json
-  # Expected: 200 (based on current LowerDeckLabs tenant)
+  # Expected: 200 (based on current MyOrg tenant)
   ```
   - ✅ Pass: Counts match expected values (±5%)
   - ❌ Fail: Significant discrepancy (>10%)
@@ -334,7 +334,7 @@ This document provides a comprehensive manual validation plan for testing the Ok
   ```bash
   # Note: Use import-all-resources.yml instead of archived import-oig workflow
   gh workflow run import-all-resources.yml \
-    -f tenant_environment=LowerDeckLabs \
+    -f tenant_environment=MyOrg \
     -f update_terraform=false \
     -f commit_changes=false
   ```
@@ -382,7 +382,7 @@ This document provides a comprehensive manual validation plan for testing the Ok
   ```bash
   # Test with update_terraform=true to verify end-to-end flow
   gh workflow run import-all-resources.yml \
-    -f tenant_environment=LowerDeckLabs \
+    -f tenant_environment=MyOrg \
     -f update_terraform=true \
     -f commit_changes=true
 
@@ -400,13 +400,13 @@ This document provides a comprehensive manual validation plan for testing the Ok
   ```bash
   # Note: Use import-all-resources.yml for complete imports
   gh workflow run import-all-resources.yml \
-    -f tenant_environment=LowerDeckLabs \
+    -f tenant_environment=MyOrg \
     -f update_terraform=false \
     -f commit_changes=false
   ```
   - ✅ Pass: Workflow triggered successfully
   - ❌ Fail: Workflow failed to trigger
-  - **Note:** This workflow replaces `lowerdecklabs-import-complete.yml`
+  - **Note:** This workflow replaces `myorg-import-complete.yml`
 
 - [ ] **Monitor Terraformer Import Workflow**
   ```bash
@@ -450,13 +450,13 @@ This document provides a comprehensive manual validation plan for testing the Ok
 - [ ] **Verify Environment Isolation**
   ```bash
   # Confirm import went to correct environment directory
-  ls -la environments/lowerdecklabs/imports/terraformer-*/
+  ls -la environments/myorg/imports/terraformer-*/
 
   # Verify no cross-contamination with other environments
-  ls environments/ | grep -v lowerdecklabs
+  ls environments/ | grep -v myorg
   # Should show no terraformer imports in other environment dirs
   ```
-  - ✅ Pass: Import only in lowerdecklabs, isolated from other environments
+  - ✅ Pass: Import only in myorg, isolated from other environments
   - ❌ Fail: Cross-environment contamination detected
 
 ---
@@ -469,7 +469,7 @@ This document provides a comprehensive manual validation plan for testing the Ok
 
 - [ ] **Initial Plan**
   ```bash
-  cd environments/lowerdecklabs/terraform
+  cd environments/myorg/terraform
   terraform plan -out=tfplan
   ```
   - ✅ Pass: Plan succeeds, shows existing resources
@@ -594,7 +594,7 @@ This document provides a comprehensive manual validation plan for testing the Ok
 
 - [ ] **Review Imported Bundles**
   ```bash
-  cd environments/lowerdecklabs/imports
+  cd environments/myorg/imports
   jq '.[0]' entitlements.json
   # Review structure of first bundle
   ```
@@ -762,7 +762,7 @@ Review results → Manual apply (workflow dispatch with dry_run=false)
   git checkout -b test/label-validation
 
   # Edit label configuration (add a test label or assignment)
-  vim environments/lowerdecklabs/config/label_mappings.json
+  vim environments/myorg/config/label_mappings.json
 
   # Example change: Add a new label value or resource assignment
   # {
@@ -773,7 +773,7 @@ Review results → Manual apply (workflow dispatch with dry_run=false)
   #   }
   # }
 
-  git add environments/lowerdecklabs/config/label_mappings.json
+  git add environments/myorg/config/label_mappings.json
   git commit -m "test: Add new label value for validation testing"
   git push -u origin test/label-validation
 
@@ -814,9 +814,9 @@ Review results → Manual apply (workflow dispatch with dry_run=false)
 
   # Break the JSON (add trailing comma or remove bracket)
   echo '{ "labels": { "test": "missing_bracket"' > \
-    environments/lowerdecklabs/config/label_mappings.json
+    environments/myorg/config/label_mappings.json
 
-  git add environments/lowerdecklabs/config/label_mappings.json
+  git add environments/myorg/config/label_mappings.json
   git commit -m "test: Invalid JSON for validation testing"
   git push -u origin test/invalid-label-json
 
@@ -833,10 +833,10 @@ Review results → Manual apply (workflow dispatch with dry_run=false)
   git checkout -b test/invalid-orn-format
 
   # Edit to add invalid ORN (missing 'orn:' prefix)
-  vim environments/lowerdecklabs/config/label_mappings.json
+  vim environments/myorg/config/label_mappings.json
   # Add assignment with: "badformat:okta:app:123" instead of "orn:okta:..."
 
-  git add environments/lowerdecklabs/config/label_mappings.json
+  git add environments/myorg/config/label_mappings.json
   git commit -m "test: Invalid ORN format for validation"
   git push -u origin test/invalid-orn-format
 
@@ -887,7 +887,7 @@ Review results → Manual apply (workflow dispatch with dry_run=false)
   ```bash
   # Manually trigger with dry_run=false to apply changes
   gh workflow run apply-labels-from-config.yml \
-    -f environment=lowerdecklabs \
+    -f environment=myorg \
     -f dry_run=false
   ```
   - ✅ Pass: Workflow triggered successfully
@@ -929,7 +929,7 @@ Review results → Manual apply (workflow dispatch with dry_run=false)
   ```bash
   # Run the validation script directly
   python3 scripts/validate_label_config.py \
-    environments/lowerdecklabs/config/label_mappings.json
+    environments/myorg/config/label_mappings.json
   ```
   - Expected output:
     - ✅ Required structure present
@@ -956,7 +956,7 @@ Review results → Manual apply (workflow dispatch with dry_run=false)
 
 - [ ] **Verify Environment Protection**
   - Deployment workflow requires `environment` input parameter
-  - Corresponding GitHub Environment (e.g., LowerDeckLabs) has Okta API secrets configured
+  - Corresponding GitHub Environment (e.g., MyOrg) has Okta API secrets configured
   - PR validation workflow does NOT use environment (no secrets needed)
   - ✅ Pass: Correct environment usage for each workflow
   - ❌ Fail: Environment misconfiguration
@@ -1115,9 +1115,9 @@ Review results → Manual apply (workflow dispatch with dry_run=false)
   - ❌ Fail: Missing state files
   - **Environments Found:** `______`
 
-- [ ] **Verify LowerDeckLabs State**
+- [ ] **Verify MyOrg State**
   ```bash
-  aws s3 ls s3://okta-terraform-demo/Okta-GitOps/lowerdecklabs/terraform.tfstate
+  aws s3 ls s3://okta-terraform-demo/Okta-GitOps/myorg/terraform.tfstate
   # Expected: File exists
   ```
   - ✅ Pass: State file exists
@@ -1126,7 +1126,7 @@ Review results → Manual apply (workflow dispatch with dry_run=false)
 
 - [ ] **Download and Validate State**
   ```bash
-  aws s3 cp s3://okta-terraform-demo/Okta-GitOps/lowerdecklabs/terraform.tfstate /tmp/state.json
+  aws s3 cp s3://okta-terraform-demo/Okta-GitOps/myorg/terraform.tfstate /tmp/state.json
   jq '.version' /tmp/state.json
   # Expected: 4 (Terraform state version)
   ```
@@ -1137,7 +1137,7 @@ Review results → Manual apply (workflow dispatch with dry_run=false)
   ```bash
   aws s3api list-object-versions \
     --bucket okta-terraform-demo \
-    --prefix Okta-GitOps/lowerdecklabs/terraform.tfstate | \
+    --prefix Okta-GitOps/myorg/terraform.tfstate | \
     jq '.Versions | length'
   # Expected: Multiple versions (versioning working)
   ```
@@ -1151,7 +1151,7 @@ Review results → Manual apply (workflow dispatch with dry_run=false)
 
 - [ ] **Test State Lock Acquisition**
   ```bash
-  cd environments/lowerdecklabs/terraform
+  cd environments/myorg/terraform
   # Terminal 1: Run this and leave waiting at "Enter a value:" prompt
   terraform apply
 
@@ -1197,7 +1197,7 @@ Review results → Manual apply (workflow dispatch with dry_run=false)
 
 - [ ] **Validate State via Terraform**
   ```bash
-  cd environments/lowerdecklabs/terraform
+  cd environments/myorg/terraform
   terraform state list | wc -l
   # Count resources in state
   ```
@@ -1231,7 +1231,7 @@ Review results → Manual apply (workflow dispatch with dry_run=false)
   ```bash
   # Make a trivial change and push
   git checkout -b test-aws-auth
-  echo "# Test" >> environments/lowerdecklabs/terraform/README.md
+  echo "# Test" >> environments/myorg/terraform/README.md
   git add .
   git commit -m "test: Verify AWS OIDC authentication"
   git push -u origin test-aws-auth
@@ -1279,7 +1279,7 @@ Review results → Manual apply (workflow dispatch with dry_run=false)
 
 - [ ] **Create Manual State Backup**
   ```bash
-  cd environments/lowerdecklabs/terraform
+  cd environments/myorg/terraform
   terraform state pull > state_backup_$(date +%Y%m%d).json
   ls -lh state_backup_*.json
   ```
@@ -1300,7 +1300,7 @@ Review results → Manual apply (workflow dispatch with dry_run=false)
   # List available versions
   aws s3api list-object-versions \
     --bucket okta-terraform-demo \
-    --prefix Okta-GitOps/lowerdecklabs/terraform.tfstate \
+    --prefix Okta-GitOps/myorg/terraform.tfstate \
     --query 'Versions[*].[VersionId,LastModified]' \
     --output table
 
@@ -1308,7 +1308,7 @@ Review results → Manual apply (workflow dispatch with dry_run=false)
   VERSION_ID="<copy-version-id>"
   aws s3api get-object \
     --bucket okta-terraform-demo \
-    --key Okta-GitOps/lowerdecklabs/terraform.tfstate \
+    --key Okta-GitOps/myorg/terraform.tfstate \
     --version-id $VERSION_ID \
     /tmp/state_old_version.json
 
@@ -1337,8 +1337,8 @@ Review results → Manual apply (workflow dispatch with dry_run=false)
 
 - [ ] **Quick Start Commands Work**
   ```bash
-  # Test commands from environments/lowerdecklabs/README.md
-  cd environments/lowerdecklabs/terraform
+  # Test commands from environments/myorg/README.md
+  cd environments/myorg/terraform
   terraform init
   terraform plan
   ```
@@ -1346,7 +1346,7 @@ Review results → Manual apply (workflow dispatch with dry_run=false)
   - ❌ Fail: Commands fail or produce errors
 
 - [ ] **Resource Counts Match Documentation**
-  - Check `environments/lowerdecklabs/README.md`
+  - Check `environments/myorg/README.md`
   - Expected counts:
     - Entitlement Bundles: 31
     - Access Reviews: 200
@@ -1422,7 +1422,7 @@ Review results → Manual apply (workflow dispatch with dry_run=false)
 ### 8.2 Workflow Security
 
 - [ ] **GitHub Environment Protection**
-  - Check: Settings → Environments → LowerDeckLabs
+  - Check: Settings → Environments → MyOrg
   - Verify:
     - [ ] Required reviewers: At least 1
     - [ ] Deployment branches: Protected
@@ -1445,7 +1445,7 @@ Review results → Manual apply (workflow dispatch with dry_run=false)
 
 - [ ] **Remove Test User**
   ```bash
-  cd environments/lowerdecklabs/terraform
+  cd environments/myorg/terraform
   rm test_resources.tf
   terraform plan
   # Expected: Shows 1 resource to destroy
@@ -1503,7 +1503,7 @@ Review results → Manual apply (workflow dispatch with dry_run=false)
 
 **Validation Date:** `____________________`
 **Validator Name:** `____________________`
-**Environment:** `LowerDeckLabs`
+**Environment:** `MyOrg`
 
 **Results:**
 - Total Tests: `____/85`
@@ -1605,7 +1605,7 @@ echo "✅ All validations passed!"
 - [Okta API Documentation](https://developer.okta.com/docs/reference/)
 - [Project README](../README.md)
 - [Resource Documentation](../docs/TERRAFORM_RESOURCES.md)
-- [Environment README](../environments/lowerdecklabs/README.md)
+- [Environment README](../environments/myorg/README.md)
 
 ---
 

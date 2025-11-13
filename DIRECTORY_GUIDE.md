@@ -10,7 +10,7 @@ Instead of separating resources by type (basic vs. OIG), this repository organiz
 
 ```
 environments/
-├── lowerdecklabs/      # Primary demo tenant
+├── myorg/      # Primary demo tenant
 │   ├── terraform/      # ALL Terraform configurations
 │   ├── imports/        # Raw API import data
 │   └── config/         # Resource owners and labels
@@ -82,23 +82,23 @@ These resources cannot be managed in Terraform and are applied via API scripts.
 ### Import Resources for an Environment
 
 ```bash
-# Import all resources for LowerDeckLabs
+# Import all resources for MyOrg
 gh workflow run import-all-resources.yml \
-  -f tenant_environment=LowerDeckLabs \
+  -f tenant_environment=MyOrg \
   -f update_terraform=true \
   -f commit_changes=true
 ```
 
 This creates/updates:
-- `environments/lowerdecklabs/terraform/*.tf`
-- `environments/lowerdecklabs/imports/*.json`
-- `environments/lowerdecklabs/config/*.json`
+- `environments/myorg/terraform/*.tf`
+- `environments/myorg/imports/*.json`
+- `environments/myorg/config/*.json`
 
 ### Apply Terraform for an Environment
 
 ```bash
 # Navigate to environment
-cd environments/lowerdecklabs/terraform
+cd environments/myorg/terraform
 
 # Initialize and apply
 terraform init
@@ -158,7 +158,7 @@ config/
 ### New Structure
 ```
 environments/
-└── lowerdecklabs/
+└── myorg/
     ├── terraform/
     │   ├── oig_entitlements.tf
     │   ├── app_oauth.tf
@@ -201,7 +201,7 @@ terraform init -migrate-state
 
 ### Scenario 1: "I have one Okta tenant"
 
-Use the `lowerdecklabs/` environment as a template:
+Use the `myorg/` environment as a template:
 1. Rename it to match your tenant name
 2. Update GitHub Environment secrets
 3. Run import workflow
@@ -242,7 +242,7 @@ Environment directory names should match:
 - Okta tenant name (for clarity)
 
 Examples:
-- `lowerdecklabs` → LowerDeckLabs GitHub Environment
+- `myorg` → MyOrg GitHub Environment
 - `production` → Production GitHub Environment
 - `mycompany-dev` → MyCompany-Dev GitHub Environment
 

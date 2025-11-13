@@ -20,8 +20,8 @@ Paste these context files:
 ```
 I need to create an OAuth/OIDC application in Okta using Terraform.
 
-ENVIRONMENT: lowerdecklabs
-FILE: environments/lowerdecklabs/terraform/apps.tf
+ENVIRONMENT: myorg
+FILE: environments/myorg/terraform/apps.tf
 
 APPLICATION DETAILS:
 - Name: [Application name]

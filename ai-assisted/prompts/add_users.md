@@ -20,8 +20,8 @@ Paste these context files to your AI:
 ```
 I need to add new users to an existing Okta Terraform environment.
 
-ENVIRONMENT: lowerdecklabs
-FILE: environments/lowerdecklabs/terraform/users.tf
+ENVIRONMENT: myorg
+FILE: environments/myorg/terraform/users.tf
 
 EXISTING USERS (for reference):
 [List a few existing users if helpful for pattern matching]
@@ -82,8 +82,8 @@ Please update the group_memberships resources to include the new user IDs.
 ```
 I need to add 3 new marketing team members to my Okta environment.
 
-ENVIRONMENT: lowerdecklabs
-FILE: environments/lowerdecklabs/terraform/users.tf
+ENVIRONMENT: myorg
+FILE: environments/myorg/terraform/users.tf
 
 NEW USERS:
 - Sarah Johnson, sarah.johnson@example.com, Marketing, Social Media Manager

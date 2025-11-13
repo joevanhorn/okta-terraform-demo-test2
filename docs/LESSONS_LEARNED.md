@@ -269,7 +269,7 @@ Terraformer generates a complete Terraform project for each resource type, inclu
 # Workflow A (using repository secrets)
 Privileged: lbc138jztfcso9bo61d7  # Org X
 
-# Workflow B (using environment secrets: LowerDeckLabs)
+# Workflow B (using environment secrets: MyOrg)
 Privileged: lbc11keklyNa6KhMi1d7  # Org Y (correct)
 ```
 
@@ -287,12 +287,12 @@ jobs:
 jobs:
   apply-labels:
     runs-on: ubuntu-latest
-    environment: LowerDeckLabs  # ← This was missing
+    environment: MyOrg  # ← This was missing
 ```
 
 **Problem:**
 - Repository secrets (`OKTA_API_TOKEN`, `OKTA_ORG_NAME`, `OKTA_BASE_URL`) pointed to a different Okta org
-- Environment secrets (under `LowerDeckLabs`) pointed to the correct org
+- Environment secrets (under `MyOrg`) pointed to the correct org
 - Workflows without `environment:` field defaulted to repository secrets
 - This caused resources to be created/modified in the wrong org
 
@@ -308,7 +308,7 @@ jobs:
    ```yaml
    jobs:
      apply-labels:
-       environment: LowerDeckLabs  # Required
+       environment: MyOrg  # Required
    ```
 
 3. **Kept only environment-agnostic repository secrets:**
@@ -320,8 +320,8 @@ jobs:
 - **Always use GitHub Environments** for org-specific secrets
 - **Each environment directory should have matching GitHub Environment:**
   ```
-  environments/lowerdecklabs/  ← Directory
-  GitHub Environment: LowerDeckLabs  ← Secrets
+  environments/myorg/  ← Directory
+  GitHub Environment: MyOrg  ← Secrets
   ```
 - **All workflows must explicitly declare `environment:`** field to use correct secrets
 
@@ -335,7 +335,7 @@ jobs:
 gh secret list
 
 # List environment secrets
-gh secret list -e LowerDeckLabs
+gh secret list -e MyOrg
 ```
 
 ---
@@ -409,13 +409,13 @@ terraform apply
 ```bash
 # ❌ WRONG - Repository-level secrets for Okta
 gh secret set OKTA_API_TOKEN -b "..."
-gh secret set OKTA_ORG_NAME -b "lowerdecklabs"
+gh secret set OKTA_ORG_NAME -b "myorg"
 gh secret set OKTA_BASE_URL -b "oktapreview.com"
 
 # ✅ CORRECT - Environment-level secrets
-gh secret set OKTA_API_TOKEN -b "..." -e LowerDeckLabs
-gh secret set OKTA_ORG_NAME -b "demo-lowerdecklabs" -e LowerDeckLabs
-gh secret set OKTA_BASE_URL -b "oktapreview.com" -e LowerDeckLabs
+gh secret set OKTA_API_TOKEN -b "..." -e MyOrg
+gh secret set OKTA_ORG_NAME -b "demo-myorg" -e MyOrg
+gh secret set OKTA_BASE_URL -b "oktapreview.com" -e MyOrg
 ```
 
 **Repository secrets should only contain:**
@@ -431,7 +431,7 @@ gh secret set OKTA_BASE_URL -b "oktapreview.com" -e LowerDeckLabs
 jobs:
   job-name:
     runs-on: ubuntu-latest
-    environment: LowerDeckLabs  # ← Always specify for org-specific jobs
+    environment: MyOrg  # ← Always specify for org-specific jobs
 ```
 
 **Verification:**
@@ -440,7 +440,7 @@ jobs:
 gh secret list
 
 # Environment secrets - should include Okta secrets
-gh secret list -e LowerDeckLabs
+gh secret list -e MyOrg
 ```
 
 ---

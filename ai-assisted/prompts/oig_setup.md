@@ -28,10 +28,10 @@ Paste these context files:
 ```
 I need to set up Okta Identity Governance (OIG) features using Terraform.
 
-ENVIRONMENT: lowerdecklabs
+ENVIRONMENT: myorg
 FILES:
-- environments/lowerdecklabs/terraform/oig_entitlements.tf
-- environments/lowerdecklabs/terraform/oig_reviews.tf
+- environments/myorg/terraform/oig_entitlements.tf
+- environments/myorg/terraform/oig_reviews.tf
 
 ENTITLEMENT BUNDLES TO CREATE:
 [List bundles with descriptions]
@@ -70,7 +70,7 @@ After generating OIG resources:
 
 ### 1. Apply Bundles
 ```bash
-cd environments/lowerdecklabs/terraform
+cd environments/myorg/terraform
 terraform apply
 ```
 
@@ -97,26 +97,26 @@ terraform apply
 ```bash
 # Sync current owners
 python3 scripts/sync_owner_mappings.py \
-  --output environments/lowerdecklabs/config/owner_mappings.json
+  --output environments/myorg/config/owner_mappings.json
 
 # Edit owner_mappings.json to set desired owners
 
 # Apply owners
 python3 scripts/apply_resource_owners.py \
-  --config environments/lowerdecklabs/config/owner_mappings.json
+  --config environments/myorg/config/owner_mappings.json
 ```
 
 ### 5. Apply Governance Labels (Optional, API-Only)
 ```bash
 # Sync current labels
 python3 scripts/sync_label_mappings.py \
-  --output environments/lowerdecklabs/config/label_mappings.json
+  --output environments/myorg/config/label_mappings.json
 
 # Edit label_mappings.json to set desired labels
 
 # Apply labels
 python3 scripts/apply_governance_labels.py \
-  --config environments/lowerdecklabs/config/label_mappings.json
+  --config environments/myorg/config/label_mappings.json
 ```
 
 ---

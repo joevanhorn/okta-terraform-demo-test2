@@ -77,7 +77,7 @@ This directory contains tools and templates for using AI assistants (Gemini, Cha
    python generate.py \
      --prompt "Create 5 marketing users and a Salesforce app" \
      --provider gemini \
-     --output environments/lowerdecklabs/terraform/demo.tf
+     --output environments/myorg/terraform/demo.tf
    ```
 
 **Time: ~2-3 minutes**
@@ -174,7 +174,7 @@ The AI will generate complete Terraform files. Copy them to your environment:
 
 ```bash
 # Copy to your terraform directory
-cd environments/lowerdecklabs/terraform
+cd environments/myorg/terraform
 
 # Paste generated code into files:
 # - users.tf
@@ -319,7 +319,7 @@ python generate.py \
 python generate.py \
   --prompt "Create a Salesforce OAuth app" \
   --provider gemini \
-  --output environments/lowerdecklabs/terraform/salesforce.tf
+  --output environments/myorg/terraform/salesforce.tf
 
 # Use specific model
 python generate.py \

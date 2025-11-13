@@ -42,7 +42,7 @@ The `export-oig.yml` workflow uses the modular export (requires environment para
 
 ```yaml
 # .github/workflows/export-oig.yml
-# Run with: gh workflow run export-oig.yml -f environment=lowerdecklabs
+# Run with: gh workflow run export-oig.yml -f environment=myorg
 python3 scripts/okta_api_manager.py \
   --action export \
   --org-name $OKTA_ORG_NAME \
@@ -60,7 +60,7 @@ python3 scripts/okta_api_manager.py \
 # Export API-only OIG resources (Labels and Resource Owners)
 python3 scripts/okta_api_manager.py \
   --action export \
-  --org-name demo-lowerdecklabs \
+  --org-name demo-myorg \
   --base-url oktapreview.com \
   --api-token $OKTA_API_TOKEN \
   --output oig_export.json \
@@ -79,7 +79,7 @@ python3 scripts/okta_api_manager.py \
 ```json
 {
   "export_date": "2025-11-07T01:59:19Z",
-  "okta_org": "demo-lowerdecklabs",
+  "okta_org": "demo-myorg",
   "okta_base_url": "oktapreview.com",
   "export_status": {
     "labels": "success",
@@ -144,7 +144,7 @@ This repository implements a two-phase GitOps workflow for label management that
 - Posts validation results as PR comment
 
 **Phase 2: Deployment (API Validation)**
-- Workflow: `.github/workflows/lowerdecklabs-apply-labels-from-config.yml`
+- Workflow: `.github/workflows/myorg-apply-labels-from-config.yml`
 - Triggers on: Push to main (auto dry-run) or manual dispatch
 - Uses environment secrets for Okta API access
 - Automatic dry-run on merge to main
@@ -189,7 +189,7 @@ The `validate_label_config.py` script can be run standalone or via GitHub Action
 ```bash
 # Validate a label configuration file
 python3 scripts/validate_label_config.py \
-  environments/lowerdecklabs/config/label_mappings.json
+  environments/myorg/config/label_mappings.json
 ```
 
 **Expected Output:**
@@ -280,7 +280,7 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Target environment (lowerdecklabs, production, etc.)'
+        description: 'Target environment (myorg, production, etc.)'
         required: true
         type: choice
       dry_run:
@@ -297,8 +297,8 @@ on:
 ```
 
 **Key Features:**
-- Requires environment parameter (e.g., `lowerdecklabs`)
-- Uses corresponding GitHub Environment for secrets (e.g., `LowerDeckLabs`)
+- Requires environment parameter (e.g., `myorg`)
+- Uses corresponding GitHub Environment for secrets (e.g., `MyOrg`)
 - Permissions: `contents: write`, `actions: read`
 - Auto dry-run on push to main (detects environment from file path)
 - Manual apply via workflow dispatch (requires environment selection)
@@ -358,7 +358,7 @@ on:
 ```bash
 # Validate JSON locally before pushing
 python3 -m json.tool \
-  environments/lowerdecklabs/config/label_mappings.json
+  environments/myorg/config/label_mappings.json
 ```
 
 **Issue: ORN format validation fails**
@@ -366,7 +366,7 @@ python3 -m json.tool \
 **Solution:**
 - Ensure all ORNs start with `orn:`
 - Format: `orn:okta:{resource-type}:{org}:{type}:{id}`
-- Example: `orn:okta:idp:lowerdecklabs:apps:oauth2:0oa123`
+- Example: `orn:okta:idp:myorg:apps:oauth2:0oa123`
 
 **Issue: Dry-run succeeds but apply fails**
 

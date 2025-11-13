@@ -62,13 +62,13 @@ This clears stale state and resolves the 404 errors.
 
 ```bash
 # Use the provided script
-./scripts/reimport_bundles_with_campaign_errors.sh lowerdecklabs
+./scripts/reimport_bundles_with_campaign_errors.sh myorg
 ```
 
 #### Manual Steps
 
 ```bash
-cd environments/lowerdecklabs/terraform
+cd environments/myorg/terraform
 
 # 1. Remove affected bundles from state
 terraform state rm okta_entitlement_bundle.purchasing

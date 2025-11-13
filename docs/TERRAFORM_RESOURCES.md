@@ -502,7 +502,7 @@ Data sources allow you to query existing resources without managing them in Terr
 ```bash
 # Import from existing tenant
 gh workflow run import-all-resources.yml \
-  -f tenant_environment=LowerDeckLabs \
+  -f tenant_environment=MyOrg \
   -f update_terraform=true \
   -f commit_changes=true
 
@@ -547,15 +547,15 @@ resource "okta_campaign" "quarterly_review" {
 ```bash
 # Import entitlement bundles (read-only documentation)
 python3 scripts/import_oig_resources.py \
-  --output-dir environments/lowerdecklabs/imports
+  --output-dir environments/myorg/imports
 
 # Sync resource owners
 python3 scripts/sync_owner_mappings.py \
-  --output environments/lowerdecklabs/config/owner_mappings.json
+  --output environments/myorg/config/owner_mappings.json
 
 # Apply resource owners
 python3 scripts/apply_resource_owners.py \
-  --config environments/lowerdecklabs/config/owner_mappings.json
+  --config environments/myorg/config/owner_mappings.json
 ```
 
 ---
@@ -564,7 +564,7 @@ python3 scripts/apply_resource_owners.py \
 
 - **Official Docs:** https://registry.terraform.io/providers/okta/okta/latest/docs
 - **Provider Repo:** https://github.com/okta/terraform-provider-okta
-- **Resource Examples:** `environments/lowerdecklabs/terraform/RESOURCE_EXAMPLES.tf`
+- **Resource Examples:** `environments/myorg/terraform/RESOURCE_EXAMPLES.tf`
 - **API Scripts:** `scripts/` directory
 
 ---

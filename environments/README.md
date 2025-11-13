@@ -6,7 +6,7 @@
 
 | Folder | Okta Organization | Purpose |
 |--------|------------------|---------|
-| `lowerdecklabs/` | lowerdecklabs.oktapreview.com | Demo and testing tenant |
+| `myorg/` | myorg.oktapreview.com | Demo and testing tenant |
 | `production/` | your-org.okta.com | Your production Okta tenant |
 | `staging/` | your-org-staging.okta.com | Your staging Okta tenant |
 | `development/` | your-org-dev.okta.com | Your development Okta tenant |
@@ -25,7 +25,7 @@ Each directory under `environments/` represents a **separate Okta organization**
 
 ```
 environments/
-├── lowerdecklabs/          # LowerDeckLabs.oktapreview.com
+├── myorg/          # MyOrg.oktapreview.com
 │   ├── terraform/          # Terraform configurations for THIS tenant
 │   │   ├── oig_entitlements.tf
 │   │   ├── provider.tf
@@ -53,7 +53,7 @@ environments/
 ### 1. One Directory = One Okta Org
 
 Each environment directory manages resources for **exactly one** Okta organization:
-- `lowerdecklabs/` → lowerdecklabs.oktapreview.com
+- `myorg/` → myorg.oktapreview.com
 - `production/` → your production Okta tenant
 - `staging/` → your staging Okta tenant
 - `development/` → your development Okta tenant
@@ -68,12 +68,12 @@ Each environment MUST use GitHub Environment secrets, NOT repository secrets.
 
 Go to: **Settings > Environments**
 
-**Example: LowerDeckLabs Environment**
-- **Environment Name:** `LowerDeckLabs` (matches directory name, case-insensitive)
+**Example: MyOrg Environment**
+- **Environment Name:** `MyOrg` (matches directory name, case-insensitive)
 - **Secrets:**
-  - `OKTA_API_TOKEN` = lowerdecklabs API token
+  - `OKTA_API_TOKEN` = myorg API token
   - `OKTA_BASE_URL` = `oktapreview.com`
-  - `OKTA_ORG_NAME` = `lowerdecklabs`
+  - `OKTA_ORG_NAME` = `myorg`
 
 **Example: Production Environment**
 - **Environment Name:** `Production`
@@ -104,7 +104,7 @@ Each environment has its own S3 state file:
 
 ```
 s3://okta-terraform-demo/Okta-GitOps/
-├── lowerdecklabs/terraform.tfstate
+├── myorg/terraform.tfstate
 ├── production/terraform.tfstate
 ├── staging/terraform.tfstate
 └── development/terraform.tfstate
@@ -201,9 +201,9 @@ environments/
 All environment-agnostic workflows require an `environment` parameter:
 
 ```bash
-# Apply resource owners to lowerdecklabs
+# Apply resource owners to myorg
 gh workflow run apply-owners.yml \
-  -f environment=lowerdecklabs \
+  -f environment=myorg \
   -f dry_run=false
 
 # Apply resource owners to production
