@@ -2,6 +2,8 @@
 
 This guide walks you through creating your own personalized Gemini Gem for generating Okta Terraform code. Once set up, you'll have a custom AI assistant that knows all the patterns and rules for this repository.
 
+> **📋 Credentials Setup:** This guide focuses on setting up the Gem itself. For configuring GitHub secrets (Okta API tokens, AWS credentials, infrastructure passwords), see the comprehensive **[SECRETS_SETUP.md](../SECRETS_SETUP.md)** guide.
+
 ---
 
 ## Table of Contents

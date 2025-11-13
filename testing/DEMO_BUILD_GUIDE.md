@@ -6,6 +6,8 @@
 **Difficulty:** Beginner-friendly
 **What You'll Learn:** Infrastructure as Code, Terraform basics, Git/GitHub, Command line essentials
 
+> **📋 Secrets Reference:** This guide covers setting up Okta and AWS credentials. For a complete reference of all required GitHub secrets, see **[SECRETS_SETUP.md](../SECRETS_SETUP.md)**.
+
 ---
 
 ## 📖 Table of Contents

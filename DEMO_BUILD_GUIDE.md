@@ -4,6 +4,8 @@
 
 This guide shows you how to use this template to rapidly create demo environments for customer presentations.
 
+> **📋 Secrets Reference:** For a complete guide to all required GitHub secrets (Okta credentials, AWS access, infrastructure passwords), see **[SECRETS_SETUP.md](./SECRETS_SETUP.md)**.
+
 ---
 
 ## 🤔 What is This Approach?
