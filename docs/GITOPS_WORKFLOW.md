@@ -535,7 +535,7 @@ open https://github.com/joevanhorn/okta-terraform-complete-demo/actions
 For significant changes, update:
 - `README.md` - If adding new features
 - `docs/TERRAFORM_RESOURCES.md` - If using new resources
-- `testing/DEMO_BUILD_GUIDE.md` - If affecting demo builds
+- `testing/DETAILED_DEMO_BUILD_GUIDE.md` - If affecting demo builds
 
 ---
 
@@ -1134,7 +1134,7 @@ The deployment workflow (`apply-labels-from-config.yml`) uses GitHub Environment
 ## Related Documentation
 
 - **[Manual Validation Plan](../testing/MANUAL_VALIDATION_PLAN.md)** - Testing checklist (Section 5.4.3 for label workflows)
-- **[Demo Build Guide](../testing/DEMO_BUILD_GUIDE.md)** - Step-by-step tutorials (Level 5 for OIG and labels)
+- **[Demo Build Guide](../testing/DETAILED_DEMO_BUILD_GUIDE.md)** - Step-by-step tutorials (Level 5 for OIG and labels)
 - **[API Management Guide](./API_MANAGEMENT.md)** - GitOps label validation workflow details
 - **[Terraform Resources](TERRAFORM_RESOURCES.md)** - Resource reference
 - **[Main README](../README.md)** - Repository overview

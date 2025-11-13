@@ -7,7 +7,7 @@ Use this prompt to generate OIG entitlement bundles and access review campaigns.
 ## Prerequisites
 
 - Okta Identity Governance license required
-- Understanding of OIG concepts (see: `testing/DEMO_BUILD_GUIDE.md` Level 5)
+- Understanding of OIG concepts (see: `testing/DETAILED_DEMO_BUILD_GUIDE.md` Level 5)
 
 ---
 
@@ -265,7 +265,7 @@ When demoing OIG features:
 
 ## Related Documentation
 
-- **OIG Overview:** `testing/DEMO_BUILD_GUIDE.md` (Level 5)
+- **OIG Overview:** `testing/DETAILED_DEMO_BUILD_GUIDE.md` (Level 5)
 - **OIG Validation:** `testing/MANUAL_VALIDATION_PLAN.md` (Section 5)
 - **Resource Guide:** `docs/TERRAFORM_RESOURCES.md` (OIG section)
 - **Okta OIG Docs:** https://help.okta.com/oie/en-us/content/topics/identity-governance/iga-main.htm

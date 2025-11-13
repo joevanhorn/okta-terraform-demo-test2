@@ -1,10 +1,13 @@
-# Okta Terraform Demo Build Guide for Solutions Engineers
+# Detailed Demo Build Guide (Comprehensive Tutorial)
 
 **Welcome!** This guide will walk you through building a complete Okta infrastructure demo using Terraform - even if you've never heard of these tools before.
 
-**Time Required:** 2-3 hours (first time)
-**Difficulty:** Beginner-friendly
-**What You'll Learn:** Infrastructure as Code, Terraform basics, Git/GitHub, Command line essentials
+**⏱️ Time Required:** 2-3 hours (first time)
+**📊 Difficulty:** Beginner-friendly (zero experience needed)
+**📚 What You'll Learn:** Infrastructure as Code, Terraform basics, Git/GitHub, Command line essentials
+**🎯 Best For:** Solutions Engineers, learning deeply, technical discussions
+
+> **⚡ Want Quick Demos?** For a fast-track guide focused on AI-assisted demo building (30-45 min), see **[SIMPLE_SIMPLE_DEMO_BUILD_GUIDE.md](../SIMPLE_SIMPLE_DEMO_BUILD_GUIDE.md)** (assumes QUICKSTART.md completed).
 
 > **📋 Secrets Reference:** This guide covers setting up Okta and AWS credentials. For a complete reference of all required GitHub secrets, see **[SECRETS_SETUP.md](../SECRETS_SETUP.md)**.
 

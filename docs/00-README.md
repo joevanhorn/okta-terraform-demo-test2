@@ -18,7 +18,7 @@ Welcome to the Okta Terraform GitOps Template documentation!
 
 **Path:**
 1. [QUICKSTART.md](../QUICKSTART.md) - Import existing org
-2. [DEMO_BUILD_GUIDE.md](../DEMO_BUILD_GUIDE.md) - Build demo scenarios
+2. [SIMPLE_DEMO_BUILD_GUIDE.md](../SIMPLE_SIMPLE_DEMO_BUILD_GUIDE.md) - Build demo scenarios
 3. [ai-assisted/README.md](../ai-assisted/README.md) - AI-assisted code generation
 
 #### 👨‍💻 Developers / Engineers
@@ -144,7 +144,7 @@ Welcome to the Okta Terraform GitOps Template documentation!
 → [ROLLBACK_GUIDE.md](./ROLLBACK_GUIDE.md)
 
 **Build a demo**
-→ [DEMO_BUILD_GUIDE.md](../DEMO_BUILD_GUIDE.md)
+→ [SIMPLE_DEMO_BUILD_GUIDE.md](../SIMPLE_SIMPLE_DEMO_BUILD_GUIDE.md)
 
 **Use AI to generate code**
 → [ai-assisted/README.md](../ai-assisted/README.md)
@@ -174,7 +174,7 @@ Best for: Understanding everything
 Best for: Creating demos quickly
 
 1. [QUICKSTART.md](../QUICKSTART.md) - 10 min
-2. [DEMO_BUILD_GUIDE.md](../DEMO_BUILD_GUIDE.md) - 30 min
+2. [SIMPLE_DEMO_BUILD_GUIDE.md](../SIMPLE_SIMPLE_DEMO_BUILD_GUIDE.md) - 30 min
 3. [ai-assisted/README.md](../ai-assisted/README.md) - 20 min
 
 ### Path 4: Production Deployment (3 hours)

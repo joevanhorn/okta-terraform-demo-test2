@@ -119,7 +119,7 @@ Complete GitOps template for managing Okta Identity Governance with Terraform.
 - docs/AWS_BACKEND_SETUP.md - S3 backend configuration
 - docs/LESSONS_LEARNED.md - Troubleshooting guide
 - docs/TERRAFORMER_OIG_FAQ.md - Terraformer limitations
-- testing/DEMO_BUILD_GUIDE.md - Demo creation guide
+- testing/DETAILED_DEMO_BUILD_GUIDE.md - Demo creation guide
 - testing/MANUAL_VALIDATION_PLAN.md - Validation checklist
 
 **Security Features**

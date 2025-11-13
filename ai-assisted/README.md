@@ -995,7 +995,7 @@ Filename: complete_demo.tf
 
 ## Related Documentation
 
-- **Demo Build Guide:** `../testing/DEMO_BUILD_GUIDE.md`
+- **Demo Build Guide:** `../testing/DETAILED_DEMO_BUILD_GUIDE.md`
 - **Resource Reference:** `../docs/TERRAFORM_RESOURCES.md`
 - **Manual Validation:** `../testing/MANUAL_VALIDATION_PLAN.md`
 - **Main README:** `../README.md`

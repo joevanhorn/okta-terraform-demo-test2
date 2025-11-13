@@ -1,8 +1,14 @@
-# Demo Build Guide for Sales Engineers
+# Simple Demo Build Guide (Quick Start)
 
 **Build impressive Okta demos in minutes, not hours!**
 
-This guide shows you how to use this template to rapidly create demo environments for customer presentations.
+This guide shows you how to use this template to rapidly create demo environments for customer presentations using AI-assisted methods and pre-built scenarios.
+
+**⏱️ Time:** 30-45 minutes first time, 5-10 minutes after
+**📊 Skill Level:** Beginner-friendly (assumes QUICKSTART.md completed)
+**🎯 Best For:** Sales Engineers, quick demos, customer presentations
+
+> **💡 Want Deep Understanding?** For a comprehensive step-by-step tutorial that teaches Infrastructure as Code from scratch, see **[DETAILED_DEMO_BUILD_GUIDE.md](./testing/DETAILED_DEMO_BUILD_GUIDE.md)** (2-3 hours, beginner-friendly).
 
 > **📋 Secrets Reference:** For a complete guide to all required GitHub secrets (Okta credentials, AWS access, infrastructure passwords), see **[SECRETS_SETUP.md](./SECRETS_SETUP.md)**.
 

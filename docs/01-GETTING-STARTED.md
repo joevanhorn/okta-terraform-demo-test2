@@ -456,7 +456,7 @@ gh workflow run apply-labels-from-config.yml \
 ### Common Tasks
 
 **Build a demo environment**
-→ [DEMO_BUILD_GUIDE.md](../DEMO_BUILD_GUIDE.md)
+→ [SIMPLE_DEMO_BUILD_GUIDE.md](../SIMPLE_SIMPLE_DEMO_BUILD_GUIDE.md)
 
 **Manage OIG features**
 → [04-OIG-FEATURES.md](./04-OIG-FEATURES.md)

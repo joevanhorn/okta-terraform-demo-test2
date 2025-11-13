@@ -501,9 +501,12 @@ Comprehensive guides are available in the `docs/` directory:
 - **[docs/TERRAFORMER_OIG_FAQ.md](./docs/TERRAFORMER_OIG_FAQ.md)** - Terraformer limitations
 - **[docs/TROUBLESHOOTING_ENTITLEMENT_BUNDLES.md](./docs/TROUBLESHOOTING_ENTITLEMENT_BUNDLES.md)** - Bundle-specific issues
 
+### Demo Building
+- **[SIMPLE_DEMO_BUILD_GUIDE.md](./SIMPLE_DEMO_BUILD_GUIDE.md)** - Quick demo creation (30-45 min, AI-assisted)
+- **[testing/DETAILED_DEMO_BUILD_GUIDE.md](./testing/DETAILED_DEMO_BUILD_GUIDE.md)** - Comprehensive tutorial (2-3 hours, learn from scratch)
+
 ### AI-Assisted Development
 - **[ai-assisted/README.md](./ai-assisted/README.md)** - AI code generation guide
-- **[testing/DEMO_BUILD_GUIDE.md](./testing/DEMO_BUILD_GUIDE.md)** - Creating demo environments
 
 ## 🤝 Common Tasks
 
