@@ -1,6 +1,16 @@
 # Archived Investigation Scripts
 
-This directory contains scripts that were used during the investigation and development of the label management features. They are kept for reference but are no longer needed for normal operations.
+⚠️ **DEPRECATED - FOR REFERENCE ONLY** ⚠️
+
+These scripts are **no longer maintained or used** in normal operations. They are kept purely for historical reference and to document the investigation process that led to the current implementation.
+
+**Do not use these scripts!** Use the production scripts in the parent `scripts/` directory instead.
+
+---
+
+## Purpose
+
+This directory contains scripts that were used during the investigation and development of the label management features. They documented the process of discovering the correct API endpoints and patterns.
 
 ## Scripts
 

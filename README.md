@@ -38,6 +38,15 @@ For comprehensive setup with all options:
 - **[TEMPLATE_SETUP.md](./TEMPLATE_SETUP.md)** - Complete setup guide covering AWS backend, multiple environments, and advanced options
 - **[SECRETS_SETUP.md](./SECRETS_SETUP.md)** - Complete guide to configuring GitHub secrets (Okta credentials, AWS access, infrastructure passwords)
 
+### 📖 Documentation
+
+**🗂️ [Documentation Index](./docs/00-INDEX.md) - Master guide to all 50+ documentation files**
+
+Can't find what you're looking for? Check the documentation index for:
+- Topic-based organization (Setup, Workflows, API, Terraform, Testing)
+- "I want to..." quick reference table
+- Links to all guides and references
+
 ## What's Included
 
 This template provides everything you need to manage Okta with GitOps:
