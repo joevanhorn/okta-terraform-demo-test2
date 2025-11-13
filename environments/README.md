@@ -32,9 +32,10 @@ environments/
     │   ├── vpc.tf
     │   ├── security-groups.tf
     │   └── ad-domain-controller.tf
-    ├── config/             # API-managed resources (owners, labels)
+    ├── config/             # API-managed resources (owners, labels, risk rules)
     │   ├── owner_mappings.json
-    │   └── label_mappings.json
+    │   ├── label_mappings.json
+    │   └── risk_rules.json
     └── imports/            # Raw API import data (JSON snapshots)
 ```
 
@@ -128,6 +129,9 @@ echo '{"assignments": {"apps": [], "groups": [], "entitlement_bundles": []}}' > 
 
 echo '{"labels": [], "assignments": {}}' > \
   environments/demo/config/label_mappings.json
+
+echo '{"description": "Risk rules (SOD policies)", "version": "1.0", "rules": []}' > \
+  environments/demo/config/risk_rules.json
 ```
 
 ### 4. Configure GitHub Environment

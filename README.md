@@ -194,6 +194,7 @@ These features require Python scripts (not yet in Terraform provider):
 
 - **Resource Owners** - Assign owners to apps, groups, and bundles
 - **Governance Labels** - Categorize resources for governance
+- **Risk Rules (SOD Policies)** - Define separation of duties policies for access certification
 - **Admin Labeling** - Automatically label admin entitlements
 - **Bulk Operations** - Manage resources at scale with rate limiting
 
@@ -241,7 +242,9 @@ See **[docs/GITOPS_WORKFLOW.md](./docs/GITOPS_WORKFLOW.md)** for detailed workfl
 **API Management:**
 - `apply-owners.yml` - Apply resource owner assignments
 - `apply-labels.yml` - Deploy governance labels
+- `apply-risk-rules.yml` - Apply risk rules (SOD policies)
 - `apply-admin-labels.yml` - Auto-label admin entitlements
+- `import-risk-rules.yml` - Import risk rules from Okta
 
 **Validation:**
 - `validate-pr.yml` - YAML syntax, security scanning
@@ -255,11 +258,13 @@ Located in `scripts/`:
 - `import_oig_resources.py` - Import OIG resources from Okta API
 - `sync_owner_mappings.py` - Sync resource owners from Okta
 - `sync_label_mappings.py` - Sync governance labels from Okta
+- `import_risk_rules.py` - Import risk rules (SOD policies) from Okta
 
 **Apply:**
 - `apply_resource_owners.py` - Apply owners to resources
 - `apply_admin_labels.py` - Auto-label admin entitlements
 - `apply_labels_from_config.py` - Deploy labels from config file
+- `apply_risk_rules.py` - Apply risk rules to Okta
 
 ### AWS Backend Infrastructure
 

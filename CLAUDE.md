@@ -50,6 +50,7 @@ Understanding what goes where is critical:
 **Layer 2: Python API Scripts (Read/Write)**
 - Resource Owners (not in Terraform provider yet)
 - Governance Labels (not in Terraform provider yet)
+- Risk Rules / SOD Policies (not in Terraform provider yet)
 - Managed in `environments/{env}/config/*.json` files
 - Applied via `scripts/*.py` or GitHub Actions
 
@@ -145,6 +146,16 @@ gh workflow run apply-owners.yml \
   -f environment=mycompany \
   -f dry_run=false
 
+# Import risk rules from Okta
+gh workflow run import-risk-rules.yml \
+  -f environment=mycompany \
+  -f commit_changes=true
+
+# Apply risk rules to Okta
+gh workflow run apply-risk-rules.yml \
+  -f environment=mycompany \
+  -f dry_run=false
+
 # Auto-label admin entitlements
 gh workflow run apply-admin-labels.yml \
   -f environment=mycompany \
@@ -177,6 +188,15 @@ python3 scripts/sync_label_mappings.py \
 # Validate label configuration (used by PR validation workflow)
 python3 scripts/validate_label_config.py \
   environments/mycompany/config/label_mappings.json
+
+# Import risk rules (SOD policies) from Okta
+python3 scripts/import_risk_rules.py \
+  --output environments/mycompany/config/risk_rules.json
+
+# Apply risk rules to Okta
+python3 scripts/apply_risk_rules.py \
+  --config environments/mycompany/config/risk_rules.json \
+  --dry-run  # Remove for actual apply
 
 # Find admin entitlements
 python3 scripts/find_admin_resources.py
