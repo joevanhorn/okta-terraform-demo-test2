@@ -106,6 +106,29 @@ gh repo create my-okta-gitops --template joevanhorn/okta-terraform-demo-template
 cd my-okta-gitops
 ```
 
+### Step 1.5: Set Up Template Sync (Optional but Recommended)
+
+**What is template sync?**
+Automatically receive updates from the template repository via weekly scheduled PRs.
+
+**Why set this up?**
+- ✅ Automatic security patches and bug fixes
+- ✅ New features and improvements
+- ✅ Workflow and documentation updates
+- ✅ Review and merge at your own pace
+
+**Setup required:**
+To sync workflow files, you need a Personal Access Token (PAT). See **[docs/TEMPLATE_SYNC_SETUP.md](./docs/TEMPLATE_SYNC_SETUP.md)** for complete setup instructions.
+
+**Quick setup:**
+1. Create a [GitHub Personal Access Token](https://github.com/settings/tokens) with `repo` and `workflow` scopes
+2. Add it as a repository secret named `WORKFLOW_PAT`
+3. The sync workflow will run automatically every Sunday at 2 AM UTC
+
+**Skip this step if:**
+- You want to manage updates manually
+- You're forking for significant customization
+
 ---
 
 ## Step 2: Set Up AWS Backend (Optional but Recommended)
