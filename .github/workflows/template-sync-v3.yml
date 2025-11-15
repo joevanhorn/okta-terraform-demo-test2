@@ -1,0 +1,16 @@
+name: Sync Template V3
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  workflows: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test with permissions
+        run: echo "Testing with permissions block"
