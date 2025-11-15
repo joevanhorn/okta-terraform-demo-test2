@@ -11,9 +11,10 @@ name: Sync Template Updates
 # The workflow will still work for non-workflow files without the PAT.
 
 on:
-  # Run weekly on Sundays at 2 AM UTC
-  schedule:
-    - cron: '0 2 * * 0'
+  # Run weekly on Sundays at 2 AM UTC (disabled in template repo)
+  # Uncomment the schedule block below if you want weekly auto-sync in derived repos
+  # schedule:
+  #   - cron: '0 2 * * 0'
 
   # Allow manual trigger
   workflow_dispatch:
