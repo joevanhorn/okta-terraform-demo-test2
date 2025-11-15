@@ -299,9 +299,111 @@ scim-status    # Check services
 scim-logs      # View live logs
 ```
 
-### 5. Configure in Okta
+### 5. Configure Okta SCIM App
 
-#### Option A: Bearer Token Authentication (Recommended)
+**You have two options for creating and configuring the Okta SCIM application:**
+
+- **Option A: Automated (Terraform + Python)** - Recommended for GitOps workflow
+- **Option B: Manual (Okta Admin Console)** - Direct configuration via UI
+
+---
+
+#### Option A: Automated Configuration (Terraform + Python)
+
+**Step 1: Create Okta App with Terraform**
+
+1. Navigate to Okta Terraform directory:
+   ```bash
+   cd ../../terraform
+   ```
+
+2. Ensure SCIM server is deployed and state is available:
+   ```bash
+   cd ../infrastructure/scim-server
+   terraform output scim_base_url
+   # Should show: https://scim.yourdomain.com/scim/v2
+   cd ../../terraform
+   ```
+
+3. The `scim_app.tf` file will automatically:
+   - Read SCIM server outputs via data source
+   - Create Okta application
+   - Output configuration command
+
+4. Apply Terraform (if not already done):
+   ```bash
+   terraform init
+   terraform apply
+   # Review plan and approve
+   ```
+
+5. Note the app ID from outputs:
+   ```bash
+   terraform output scim_app_id
+   # Example: 0oa1b2c3d4e5f6g7h8i9
+   ```
+
+**Step 2: Configure SCIM Connection with Python**
+
+The Okta Terraform provider cannot configure SCIM connection settings (API limitation).
+Complete the configuration using the Python script:
+
+```bash
+# Get SCIM credentials from infrastructure state
+cd ../infrastructure/scim-server
+SCIM_URL=$(terraform output -raw scim_base_url)
+SCIM_TOKEN=$(terraform output -json okta_configuration | jq -r '.header_auth_token')
+
+# Run configuration script
+cd ../../terraform
+python3 ../../scripts/configure_scim_app.py \
+  --app-id $(terraform output -raw scim_app_id) \
+  --scim-url "$SCIM_URL" \
+  --scim-token "$SCIM_TOKEN" \
+  --test-connection
+```
+
+The script will:
+- ✅ Enable SCIM provisioning for the app
+- ✅ Configure SCIM connection (base URL, authentication)
+- ✅ Test the connection
+- ✅ Enable provisioning features (create, update, deactivate users)
+
+**Dry Run Mode** (preview changes without applying):
+```bash
+python3 ../../scripts/configure_scim_app.py \
+  --app-id $(terraform output -raw scim_app_id) \
+  --scim-url "$SCIM_URL" \
+  --scim-token "$SCIM_TOKEN" \
+  --dry-run
+```
+
+**Using Basic Auth Instead** (if configured in SCIM server):
+```bash
+SCIM_USER=$(terraform output -json okta_configuration | jq -r '.basic_auth_username')
+SCIM_PASS=$(terraform output -json okta_configuration | jq -r '.basic_auth_password')
+
+python3 ../../scripts/configure_scim_app.py \
+  --app-id $(terraform output -raw scim_app_id) \
+  --scim-url "$SCIM_URL" \
+  --scim-user "$SCIM_USER" \
+  --scim-pass "$SCIM_PASS" \
+  --auth-mode basic \
+  --test-connection
+```
+
+**Troubleshooting Automated Configuration:**
+
+If the Python script fails (some API endpoints may not be available for all app types):
+1. The script will provide manual configuration instructions
+2. Fall back to Option B (Manual Configuration) below
+3. See `docs/SCIM_OKTA_AUTOMATION.md` for detailed troubleshooting
+
+---
+
+#### Option B: Manual Configuration (Okta Admin Console)
+
+**Using Bearer Token Authentication (Recommended)**
 
 1. In Okta Admin Console: **Applications → Applications**
 2. Click **Browse App Catalog**

@@ -15,3 +15,31 @@ variable "okta_api_token" {
   type        = string
   sensitive   = true
 }
+
+# ==============================================================================
+# SCIM Application Variables
+# ==============================================================================
+
+variable "scim_environment" {
+  description = "Environment name for SCIM server state lookup (must match infrastructure/scim-server deployment)"
+  type        = string
+  default     = "myorg"
+}
+
+variable "scim_aws_region" {
+  description = "AWS region where SCIM server state is stored"
+  type        = string
+  default     = "us-east-1"
+}
+
+variable "scim_app_label" {
+  description = "Label for SCIM application in Okta"
+  type        = string
+  default     = "Custom SCIM Demo App"
+}
+
+variable "scim_app_group_id" {
+  description = "Optional: Group ID to automatically assign to SCIM app"
+  type        = string
+  default     = ""
+}
