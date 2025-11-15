@@ -227,9 +227,65 @@ subnet_id = "subnet-private-1a"  # Must have NAT gateway route
 
 **Note:** Elastic IP is still created for Route53 DNS, but the instance itself can be in a private subnet.
 
-## Quick Start
+## Deployment Options
 
-### 1. Configure Variables
+You have two options for deploying the SCIM server:
+
+### Option A: GitHub Actions Workflow (Recommended)
+
+**Best for:** GitOps workflow, team collaboration, environment protection
+
+Uses GitHub Environment secrets instead of local terraform.tfvars files.
+
+#### Setup GitHub Environment Secrets
+
+1. Navigate to your repository **Settings → Environments**
+2. Select your environment (e.g., `MyOrg`)
+3. Add the following secrets:
+
+| Secret Name | Description | Example |
+|-------------|-------------|---------|
+| `SCIM_AUTH_TOKEN` | Bearer token for SCIM auth | `python3 -c 'import secrets; print(secrets.token_urlsafe(32))'` |
+| `AWS_REGION` | AWS region | `us-east-1` |
+| `AWS_ROLE_ARN` | AWS OIDC role ARN | `arn:aws:iam::123456789012:role/GitHubActions-OktaTerraform` |
+
+#### Deploy via GitHub Actions
+
+```bash
+# Trigger deployment workflow
+gh workflow run deploy-scim-server.yml \
+  -f environment=myorg \
+  -f domain_name=scim.demo-myorg.example.com \
+  -f route53_zone_id=Z1234567890ABC \
+  -f instance_type=t3.micro \
+  -f action=plan
+
+# Review plan in workflow summary
+# Then apply
+gh workflow run deploy-scim-server.yml \
+  -f environment=myorg \
+  -f domain_name=scim.demo-myorg.example.com \
+  -f route53_zone_id=Z1234567890ABC \
+  -f instance_type=t3.micro \
+  -f action=apply
+```
+
+**Benefits:**
+- ✅ Secrets managed in GitHub (not in local files)
+- ✅ Environment protection with approval gates
+- ✅ Audit trail of all deployments
+- ✅ AWS OIDC authentication (no long-lived credentials)
+- ✅ Automated next-step instructions in workflow summary
+
+---
+
+### Option B: Manual Terraform Deployment
+
+**Best for:** Local development, testing, one-time demos
+
+Uses local terraform.tfvars file with secrets.
+
+#### 1. Configure Variables
 
 Create `terraform.tfvars` in this directory:
 
@@ -251,7 +307,7 @@ enable_cloudwatch_logs = true
 log_retention_days     = 7
 ```
 
-### 2. Generate Secure Tokens
+#### 2. Generate Secure Tokens
 
 ```bash
 # Generate SCIM Bearer token
@@ -261,7 +317,7 @@ python3 -c 'import secrets; print(secrets.token_urlsafe(32))'
 python3 -c 'import secrets; print(secrets.token_urlsafe(24))'
 ```
 
-### 3. Deploy Infrastructure
+#### 3. Deploy Infrastructure
 
 ```bash
 # Initialize Terraform
@@ -277,7 +333,7 @@ terraform apply
 terraform output
 ```
 
-### 4. Wait for Server Initialization
+#### 4. Wait for Server Initialization
 
 The server takes **5-10 minutes** to fully initialize:
 1. EC2 instance boots
@@ -299,7 +355,7 @@ scim-status    # Check services
 scim-logs      # View live logs
 ```
 
-### 5. Configure Okta SCIM App
+#### 5. Configure Okta SCIM App
 
 **You have two options for creating and configuring the Okta SCIM application:**
 
@@ -308,7 +364,7 @@ scim-logs      # View live logs
 
 ---
 
-#### Option A: Automated Configuration (Terraform + Python)
+##### Option A: Automated Configuration (Terraform + Python)
 
 **Step 1: Create Okta App with Terraform**
 
@@ -401,7 +457,7 @@ If the Python script fails (some API endpoints may not be available for all app 
 
 ---
 
-#### Option B: Manual Configuration (Okta Admin Console)
+##### Option B: Manual Configuration (Okta Admin Console)
 
 **Using Bearer Token Authentication (Recommended)**
 
@@ -426,14 +482,14 @@ If the Python script fails (some API endpoints may not be available for all app 
     - ✅ Deactivate Users
     - ✅ Sync Password (optional)
 
-#### Option B: Basic Authentication
+##### Option C: Basic Authentication
 
 1. Search for **"SCIM 2.0 Test App (Basic Auth)"**
 2. Follow same steps but use:
    - **Username**: Value from `scim_basic_user` variable
    - **Password**: Value from `scim_basic_pass` variable
 
-### 6. Test Provisioning
+#### 6. Test Provisioning
 
 1. **Assign Users** to the SCIM app in Okta
 2. **View Dashboard**: `https://scim.yourdomain.com/`

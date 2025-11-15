@@ -51,7 +51,165 @@ This deployment will create a custom SCIM 2.0 server on AWS to demonstrate:
 
 ---
 
-## Deployment Steps
+## Deployment Approaches
+
+You have two options for deploying the SCIM server:
+
+**Option A: GitHub Actions Workflow (Recommended)**
+- Uses GitHub Environment secrets (no local terraform.tfvars)
+- Environment protection with approval gates
+- Audit trail of all deployments
+- AWS OIDC authentication (no long-lived credentials)
+- See "Deployment via GitHub Actions" section below
+
+**Option B: Manual Terraform**
+- Uses local terraform.tfvars file
+- Direct Terraform commands
+- Best for local development and testing
+- See "Deployment via Manual Terraform" section below
+
+---
+
+## Deployment via GitHub Actions (Recommended)
+
+### Prerequisites - GitHub Environment Secrets
+
+Before deploying, add these secrets to your GitHub Environment:
+
+1. Navigate to **Settings → Environments → MyOrg**
+2. Add the following secrets:
+
+| Secret Name | Value | How to Generate |
+|-------------|-------|-----------------|
+| `SCIM_AUTH_TOKEN` | `Axeo1AQ9JFVY7ONK7DyUMZ12K2ZpEZ1Jhw7YtdNss74` | `python3 -c 'import secrets; print(secrets.token_urlsafe(32))'` |
+| `AWS_REGION` | `us-east-1` | (Already configured) |
+| `AWS_ROLE_ARN` | `arn:aws:iam::...` | (Already configured for OIDC) |
+
+### Phase 1: Deploy SCIM Server Infrastructure (AWS)
+
+```bash
+# Plan deployment
+gh workflow run deploy-scim-server.yml \
+  -f environment=myorg \
+  -f domain_name=scim.demo-entitlements-lowerdecks.com \
+  -f route53_zone_id=Z0726191Q5GQ53YU4EOR \
+  -f instance_type=t3.micro \
+  -f action=plan
+
+# Review plan in GitHub Actions workflow summary
+# If plan looks good, apply:
+gh workflow run deploy-scim-server.yml \
+  -f environment=myorg \
+  -f domain_name=scim.demo-entitlements-lowerdecks.com \
+  -f route53_zone_id=Z0726191Q5GQ53YU4EOR \
+  -f instance_type=t3.micro \
+  -f action=apply
+```
+
+**Expected Outputs** (from workflow summary):
+```
+scim_base_url = "https://scim.demo-entitlements-lowerdecks.com/scim/v2"
+dashboard_url = "https://scim.demo-entitlements-lowerdecks.com"
+domain_name = "scim.demo-entitlements-lowerdecks.com"
+```
+
+### Phase 2: Verify SCIM Server Health
+
+Wait 5-10 minutes for initialization, then:
+
+```bash
+# Health check
+curl https://scim.demo-entitlements-lowerdecks.com/health
+# Expected: {"status":"healthy"}
+
+# View dashboard in browser
+open https://scim.demo-entitlements-lowerdecks.com
+```
+
+### Phase 3: Create Okta SCIM Application
+
+```bash
+# Navigate to Okta Terraform directory
+cd environments/myorg/terraform
+
+# Verify SCIM server state is readable
+terraform init
+
+# Review the plan (should show SCIM app creation)
+terraform plan
+
+# Create Okta app
+terraform apply
+
+# Capture app ID for configuration
+APP_ID=$(terraform output -raw scim_app_id)
+echo "App ID: $APP_ID"
+```
+
+### Phase 4: Configure SCIM Connection (Python Script)
+
+The Okta Terraform provider **cannot** configure SCIM connections. Use the Python script:
+
+```bash
+# Set Okta environment variables
+export OKTA_ORG_NAME="your-org"
+export OKTA_BASE_URL="okta.com"
+export OKTA_API_TOKEN="your-token"
+
+# Run configuration script
+python3 ../../scripts/configure_scim_app.py \
+  --app-id "$APP_ID" \
+  --scim-url "https://scim.demo-entitlements-lowerdecks.com/scim/v2" \
+  --scim-token "${{ secrets.SCIM_AUTH_TOKEN }}" \
+  --test-connection
+```
+
+**Expected Output:**
+```
+================================================================================
+CONFIGURING SCIM APPLICATION
+================================================================================
+
+📋 Getting app details...
+   App: Custom SCIM Demo App
+   ID: 0oa...
+
+🔧 Enabling SCIM provisioning...
+✅ Enabled SCIM provisioning
+
+🔗 Configuring SCIM connection...
+✅ Configured SCIM connection
+
+🧪 Testing SCIM connection...
+✅ SCIM connection test succeeded!
+
+⚙️  Enabling provisioning features...
+✅ Enabled provisioning features
+
+================================================================================
+✅ SCIM CONFIGURATION COMPLETE
+================================================================================
+```
+
+### Phase 5: Test Provisioning
+
+1. **Assign users in Okta:**
+   - Open Okta Admin Console
+   - Navigate to Applications → Custom SCIM Demo App
+   - Go to Assignments tab
+   - Assign users or groups
+
+2. **Verify provisioning:**
+   ```bash
+   # Check SCIM server dashboard
+   open https://scim.demo-entitlements-lowerdecks.com
+   ```
+
+3. **View provisioned users and roles** in the dashboard
+
+---
+
+## Deployment via Manual Terraform
 
 ### Phase 1: Deploy SCIM Server Infrastructure (AWS)
 
