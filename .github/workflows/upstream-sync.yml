@@ -1,0 +1,72 @@
+name: Sync Template Updates
+
+on:
+  workflow_dispatch:
+    inputs:
+      template_branch:
+        description: 'Template branch to sync from'
+        required: false
+        default: 'main'
+        type: string
+
+jobs:
+  sync-template:
+    name: Sync from Template Repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      workflows: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Add template remote
+        run: |
+          if git remote | grep -q '^template$'; then
+            git remote set-url template https://github.com/joevanhorn/okta-terraform-demo-template.git
+          else
+            git remote add template https://github.com/joevanhorn/okta-terraform-demo-template.git
+          fi
+
+      - name: Fetch template updates
+        run: |
+          TEMPLATE_BRANCH="${{ inputs.template_branch || 'main' }}"
+          git fetch template "$TEMPLATE_BRANCH"
+
+      - name: Check for updates
+        id: check_updates
+        run: |
+          TEMPLATE_BRANCH="${{ inputs.template_branch || 'main' }}"
+          MERGE_BASE=$(git merge-base HEAD template/$TEMPLATE_BRANCH 2>/dev/null || echo "")
+
+          if [ -z "$MERGE_BASE" ]; then
+            echo "has_updates=true" >> $GITHUB_OUTPUT
+            echo "update_count=unknown" >> $GITHUB_OUTPUT
+          else
+            UPDATE_COUNT=$(git rev-list --count HEAD..template/$TEMPLATE_BRANCH)
+            if [ "$UPDATE_COUNT" -gt 0 ]; then
+              echo "has_updates=true" >> $GITHUB_OUTPUT
+              echo "update_count=$UPDATE_COUNT" >> $GITHUB_OUTPUT
+            else
+              echo "has_updates=false" >> $GITHUB_OUTPUT
+              echo "update_count=0" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Summary
+        run: |
+          if [ "${{ steps.check_updates.outputs.has_updates }}" = "true" ]; then
+            echo "Updates found: ${{ steps.check_updates.outputs.update_count }} commits"
+          else
+            echo "Repository is up to date with template"
+          fi
