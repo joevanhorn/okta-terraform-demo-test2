@@ -125,6 +125,7 @@ output "okta_configuration" {
 
 output "setup_instructions" {
   description = "Next steps after deployment"
+  sensitive   = true
   value = <<-EOT
     ╔════════════════════════════════════════════════════════════════════════════╗
     ║                   SCIM Server Deployment Complete!                         ║
