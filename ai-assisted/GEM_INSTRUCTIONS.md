@@ -734,6 +734,319 @@ Generate security-groups.tf with all AD ports:
 
 ---
 
+## SCIM Server Infrastructure Patterns
+
+### SCIM Server Directory Structure
+
+Custom SCIM 2.0 server for demonstrating API-only entitlements:
+
+```
+environments/{env}/infrastructure/scim-server/
+├── provider.tf          # AWS provider with S3 backend
+├── variables.tf         # SCIM server variables
+├── main.tf              # EC2, security groups, Route53
+├── outputs.tf           # SCIM URLs, connection info
+├── user-data.sh         # Server initialization script
+├── demo_scim_server.py  # Flask SCIM 2.0 server
+├── requirements.txt     # Python dependencies
+└── README.md            # Deployment guide
+```
+
+**AND** in `environments/{env}/terraform/`:
+```
+scim_app.tf  # Okta SCIM application (reads infrastructure state)
+```
+
+### When to Generate SCIM Infrastructure
+
+**Generate SCIM server when user requests:**
+- "Deploy SCIM server"
+- "Create custom SCIM integration"
+- "Set up API-only entitlements demo"
+- "Custom provisioning server"
+- "SCIM 2.0 server for entitlements"
+
+### Two-Phase SCIM Automation
+
+**IMPORTANT**: SCIM involves TWO separate Terraform configurations:
+
+1. **Infrastructure** (`infrastructure/scim-server/`):
+   - AWS EC2 with Flask SCIM server
+   - Automatic HTTPS via Caddy + Let's Encrypt
+   - Custom entitlements/roles
+
+2. **Okta App** (`terraform/scim_app.tf`):
+   - Okta application for SCIM provisioning
+   - Reads SCIM server state via data source
+   - **MUST** be configured via Python script (provider limitation)
+
+### SCIM Infrastructure Provider Configuration
+
+**Always use S3 backend with scim-server subfolder:**
+
+```hcl
+# provider.tf
+terraform {
+  backend "s3" {
+    bucket         = "okta-terraform-demo"
+    key            = "Okta-GitOps/{environment}/scim-server/terraform.tfstate"
+    region         = "us-east-1"
+    encrypt        = true
+    dynamodb_table = "okta-terraform-state-lock"
+  }
+
+  required_version = ">= 1.6.0"
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+provider "aws" {
+  region = var.aws_region
+
+  default_tags {
+    tags = {
+      Project     = "Okta Terraform Demo - SCIM Server"
+      Repository  = "okta-terraform-demo-template"
+      ManagedBy   = "Terraform"
+      Environment = var.environment
+      Purpose     = "Custom SCIM Integration for API-Only Entitlements"
+    }
+  }
+}
+```
+
+### SCIM Server Main Infrastructure Pattern
+
+**Reference existing file**: `environments/myorg/infrastructure/scim-server/main.tf` has complete working example.
+
+**Key components to include:**
+
+1. **Latest Ubuntu AMI** (data source)
+2. **EC2 Instance** with user-data script
+3. **Elastic IP** for stable addressing
+4. **Route53 DNS Record**
+5. **Security Group** (HTTP, HTTPS, optional SSH)
+6. **IAM Role** for SSM access (no SSH needed)
+
+```hcl
+# main.tf minimal example
+data "aws_ami" "ubuntu" {
+  most_recent = true
+  owners      = ["099720109477"] # Canonical
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
+}
+
+resource "aws_instance" "scim_server" {
+  ami                    = data.aws_ami.ubuntu.id
+  instance_type          = var.instance_type
+  subnet_id              = var.subnet_id != "" ? var.subnet_id : null
+  vpc_security_group_ids = [var.use_existing_security_group ? var.security_group_id : aws_security_group.scim_server[0].id]
+  iam_instance_profile   = aws_iam_instance_profile.scim_server.name
+  user_data              = templatefile("$${path.module}/user-data.sh", {
+    domain_name        = var.domain_name
+    scim_auth_token    = var.scim_auth_token
+    scim_basic_user    = var.scim_basic_user
+    scim_basic_pass    = var.scim_basic_pass
+    custom_entitlements = var.custom_entitlements
+  })
+
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"  # IMDSv2 required
+    http_put_response_hop_limit = 1
+  }
+
+  tags = {
+    Name = "$${var.environment}-scim-server"
+  }
+}
+```
+
+### SCIM Okta Application Pattern
+
+**In** `environments/{env}/terraform/scim_app.tf`:
+
+```hcl
+# Data source to read SCIM server state
+data "terraform_remote_state" "scim_server" {
+  backend = "s3"
+
+  config = {
+    bucket = "okta-terraform-demo"
+    key    = "Okta-GitOps/$${var.scim_environment}/scim-server/terraform.tfstate"
+    region = var.scim_aws_region
+  }
+}
+
+# Okta SCIM application
+resource "okta_app_auto_login" "scim_demo" {
+  label                = var.scim_app_label
+  hide_ios             = true
+  hide_web             = true
+  credentials_scheme   = "SHARED_USERNAME_AND_PASSWORD"
+  sign_on_url          = data.terraform_remote_state.scim_server.outputs.dashboard_url
+  sign_on_redirect_url = data.terraform_remote_state.scim_server.outputs.dashboard_url
+  skip_users           = true
+  skip_groups          = true
+
+  lifecycle {
+    ignore_changes = [
+      features,
+      user_name_template,
+      user_name_template_type,
+      user_name_template_suffix
+    ]
+  }
+}
+
+output "scim_app_id" {
+  description = "Okta application ID for SCIM demo app"
+  value       = okta_app_auto_login.scim_demo.id
+}
+
+output "scim_configuration_command" {
+  description = "Command to configure SCIM connection via Python script"
+  value       = <<-EOT
+    python3 scripts/configure_scim_app.py \
+      --app-id $${okta_app_auto_login.scim_demo.id} \
+      --scim-url $${data.terraform_remote_state.scim_server.outputs.scim_base_url} \
+      --test-connection
+  EOT
+}
+```
+
+### CRITICAL: SCIM Connection Configuration
+
+**The Okta Terraform provider CANNOT configure SCIM connections!**
+
+After `terraform apply`, users **MUST** run Python script:
+
+```bash
+python3 scripts/configure_scim_app.py \
+  --app-id <app_id> \
+  --scim-url <scim_base_url> \
+  --scim-token <bearer_token> \
+  --test-connection
+```
+
+**Always include this in outputs and comments!**
+
+### SCIM Variables Pattern
+
+```hcl
+# variables.tf for SCIM server
+variable "domain_name" {
+  description = "Fully qualified domain name for SCIM server (e.g., scim.demo-myorg.com)"
+  type        = string
+
+  validation {
+    condition     = can(regex("^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]\\.[a-z]{2,}$", var.domain_name))
+    error_message = "Domain name must be a valid FQDN (e.g., scim.example.com)"
+  }
+}
+
+variable "route53_zone_id" {
+  description = "Route53 hosted zone ID for your domain"
+  type        = string
+
+  validation {
+    condition     = can(regex("^Z[A-Z0-9]+$", var.route53_zone_id))
+    error_message = "Route53 zone ID must start with Z followed by alphanumeric characters"
+  }
+}
+
+variable "scim_auth_token" {
+  description = "Bearer token for SCIM authentication (generate with: python3 -c 'import secrets; print(secrets.token_urlsafe(32))')"
+  type        = string
+  sensitive   = true
+
+  validation {
+    condition     = length(var.scim_auth_token) >= 32
+    error_message = "SCIM auth token must be at least 32 characters for security"
+  }
+}
+
+# SCIM app variables (in terraform/variables.tf)
+variable "scim_environment" {
+  description = "Environment name for SCIM server state lookup (must match infrastructure/scim-server deployment)"
+  type        = string
+  default     = "myorg"
+}
+
+variable "scim_aws_region" {
+  description = "AWS region where SCIM server state is stored"
+  type        = string
+  default     = "us-east-1"
+}
+
+variable "scim_app_label" {
+  description = "Label for SCIM application in Okta"
+  type        = string
+  default     = "Custom SCIM Demo App"
+}
+```
+
+### SCIM Example Scenarios
+
+**Scenario: "Deploy SCIM server for healthcare demo"**
+
+Generate TWO sets of files:
+
+**Set 1**: `environments/myorg/infrastructure/scim-server/`
+- provider.tf (AWS with S3 backend)
+- variables.tf (domain, tokens, custom healthcare roles)
+- main.tf (EC2, security groups, Route53)
+- outputs.tf (SCIM URLs, setup instructions)
+
+**Set 2**: `environments/myorg/terraform/scim_app.tf`
+- Data source to read SCIM server state
+- Okta app resource
+- Configuration command output
+
+**Include in comments**:
+```
+# IMPORTANT: After terraform apply, configure SCIM connection:
+# python3 ../../scripts/configure_scim_app.py \
+#   --app-id <from terraform output> \
+#   --scim-url <from infrastructure output> \
+#   --scim-token <from variables> \
+#   --test-connection
+```
+
+**Scenario: "Custom entitlements for financial app"**
+
+Generate custom_entitlements variable:
+```hcl
+custom_entitlements = jsonencode([
+  {
+    id = "trader"
+    name = "Securities Trader"
+    description = "Execute trades and view market data"
+  },
+  {
+    id = "compliance-officer"
+    name = "Compliance Officer"
+    description = "Audit access and review transactions"
+  },
+  {
+    id = "risk-manager"
+    name = "Risk Manager"
+    description = "Monitor risk exposure and limits"
+  }
+])
+```
+
+---
+
 ## Common Pitfalls to Avoid
 
 ### ❌ Don't Generate These (Not in Terraform Provider)

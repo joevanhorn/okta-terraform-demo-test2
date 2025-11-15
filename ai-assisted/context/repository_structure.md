@@ -17,17 +17,28 @@ okta-terraform-complete-demo/
 │   │   │   ├── users.tf        # User resources
 │   │   │   ├── groups.tf       # Group resources
 │   │   │   ├── apps.tf         # Application resources
+│   │   │   ├── scim_app.tf     # SCIM application (connects to scim-server) ⭐ NEW!
 │   │   │   ├── oig_entitlements.tf  # OIG entitlement bundles
 │   │   │   └── oig_reviews.tf  # OIG access reviews
 │   │   ├── infrastructure/     # Terraform configurations (AWS infrastructure)
-│   │   │   ├── provider.tf     # AWS provider with S3 backend
-│   │   │   ├── variables.tf    # Infrastructure variables
-│   │   │   ├── vpc.tf          # VPC and networking
-│   │   │   ├── security-groups.tf  # Security groups (AD ports)
-│   │   │   ├── ad-domain-controller.tf  # EC2 Domain Controller
-│   │   │   ├── outputs.tf      # Infrastructure outputs
-│   │   │   ├── scripts/        # PowerShell automation scripts
-│   │   │   └── terraform.tfvars.example  # Example variables
+│   │   │   ├── active-directory/  # Active Directory Domain Controller (optional)
+│   │   │   │   ├── provider.tf     # AWS provider with S3 backend
+│   │   │   │   ├── variables.tf    # Infrastructure variables
+│   │   │   │   ├── vpc.tf          # VPC and networking
+│   │   │   │   ├── security-groups.tf  # Security groups (AD ports)
+│   │   │   │   ├── ad-domain-controller.tf  # EC2 Domain Controller
+│   │   │   │   ├── outputs.tf      # Infrastructure outputs
+│   │   │   │   ├── scripts/        # PowerShell automation scripts
+│   │   │   │   └── terraform.tfvars.example  # Example variables
+│   │   │   └── scim-server/    # Custom SCIM 2.0 Server (optional) ⭐ NEW!
+│   │   │       ├── provider.tf     # AWS provider with S3 backend
+│   │   │       ├── variables.tf    # SCIM server variables
+│   │   │       ├── main.tf         # EC2, security groups, Route53
+│   │   │       ├── outputs.tf      # SCIM URLs, connection info
+│   │   │       ├── user-data.sh    # Server initialization (Caddy + Flask)
+│   │   │       ├── demo_scim_server.py  # Flask SCIM 2.0 server
+│   │   │       ├── requirements.txt     # Python dependencies
+│   │   │       └── README.md       # Deployment guide
 │   │   ├── imports/            # Imported JSON data
 │   │   └── config/             # Configuration files
 │   │       ├── owner_mappings.json    # Resource owners (API-managed)
@@ -43,7 +54,8 @@ okta-terraform-complete-demo/
 │   ├── sync_label_mappings.py      # Sync governance labels
 │   ├── apply_admin_labels.py       # Auto-label admin resources
 │   ├── import_risk_rules.py        # Import risk rules (SOD policies)
-│   └── apply_risk_rules.py         # Apply risk rules to Okta
+│   ├── apply_risk_rules.py         # Apply risk rules to Okta
+│   └── configure_scim_app.py       # Configure SCIM connection (API-only) ⭐ NEW!
 ├── docs/                       # Documentation
 ├── testing/                    # Testing and validation guides
 └── .github/workflows/          # GitHub Actions workflows
@@ -93,7 +105,8 @@ Each resource type has its own file:
 - `oig_reviews.tf` - OIG access review campaigns
 
 ### Infrastructure Files (Optional)
-Active Directory infrastructure files (in `infrastructure/` subdirectory):
+
+**Active Directory** infrastructure files (in `infrastructure/active-directory/` subdirectory):
 - `provider.tf` - AWS provider with S3 backend configuration
 - `variables.tf` - Infrastructure input variables (passwords, domain names)
 - `vpc.tf` - VPC, subnets, internet gateway, routing tables
@@ -104,6 +117,28 @@ Active Directory infrastructure files (in `infrastructure/` subdirectory):
 - `terraform.tfvars.example` - Example configuration template
 - `.gitignore` - Protect sensitive files (*.tfvars, *.tfstate)
 - `README.md` - Comprehensive deployment guide
+
+**SCIM Server** infrastructure files (in `infrastructure/scim-server/` subdirectory):
+- `provider.tf` - AWS provider with S3 backend configuration
+- `variables.tf` - SCIM server variables (domain, tokens, network config)
+- `main.tf` - EC2 instance, security groups, Elastic IP, Route53 DNS
+- `outputs.tf` - SCIM URLs, Okta configuration values, setup instructions
+- `user-data.sh` - Server initialization (Caddy reverse proxy + Flask SCIM server)
+- `demo_scim_server.py` - Flask SCIM 2.0 server with custom entitlements (20KB)
+- `requirements.txt` - Python dependencies
+- `.gitignore` - Protect sensitive files
+- `README.md` - Complete deployment and configuration guide
+
+**SCIM Application** (in `terraform/` directory - Okta side):
+- `scim_app.tf` - Okta SCIM application resource
+  - Data source to read SCIM server state from S3
+  - Creates Okta app for SCIM provisioning
+  - Outputs app ID and configuration commands
+- `scripts/configure_scim_app.py` - Python script to configure SCIM connection via API
+  - Enables SCIM provisioning
+  - Configures connection (base URL, authentication)
+  - Tests connection
+  - Enables provisioning features
 
 ## Naming Conventions
 
@@ -178,3 +213,50 @@ infrastructure/      → AWS provider (aws_vpc, aws_instance, etc.)
 ```
 
 Each has its own provider, state, and backend configuration.
+
+### SCIM Server Integration (NEW!)
+
+When to generate SCIM server infrastructure:
+- User requests "SCIM server", "custom SCIM", or "API-only entitlements" demo
+- User wants to demonstrate provisioning to custom applications
+- User needs to show custom roles/entitlements not mapped to app resources
+
+**Two-Phase SCIM Automation:**
+
+1. **Infrastructure** (`infrastructure/scim-server/`):
+   - Deploys AWS EC2 with Flask SCIM 2.0 server
+   - Automatic HTTPS via Caddy + Let's Encrypt
+   - Custom entitlements/roles
+   - State: `s3://bucket/Okta-GitOps/{env}/scim-server/terraform.tfstate`
+
+2. **Okta App** (`terraform/scim_app.tf`):
+   - Creates Okta application for SCIM provisioning
+   - Reads SCIM server outputs via data source
+   - Must be configured via Python script (provider limitation)
+
+**Complete Workflow:**
+```bash
+# Step 1: Deploy SCIM server infrastructure
+cd environments/myorg/infrastructure/scim-server
+terraform apply
+
+# Step 2: Create Okta SCIM app
+cd ../../terraform
+terraform apply
+
+# Step 3: Configure SCIM connection (Python - API only)
+python3 ../../scripts/configure_scim_app.py \
+  --app-id $(terraform output -raw scim_app_id) \
+  --scim-url $(terraform output -raw scim_server_url) \
+  --scim-token <token> \
+  --test-connection
+```
+
+**Why Python Script?**
+Okta Terraform provider (v6.4.0) does NOT support SCIM connection configuration.
+These settings must be configured via Okta Admin API (Python script handles this).
+
+**Documentation:**
+- SCIM Server: `environments/myorg/infrastructure/scim-server/README.md`
+- Automation Guide: `docs/SCIM_OKTA_AUTOMATION.md`
+- Release Plan: `upcoming-releases/SCIM_SERVER_INTEGRATION_PLAN.md`
