@@ -18,8 +18,9 @@ This guide walks you through creating your own personalized Gemini Gem for gener
 8. [Updating Your Gem](#updating-your-gem)
 9. [Sharing Your Gem with Your Team](#sharing-your-gem-with-your-team)
 10. [GitHub Integration (No Git Required)](#github-integration-no-git-required)
-11. [Cost Considerations](#cost-considerations)
-12. [Tips for Best Results](#tips-for-best-results)
+11. [Mac Terminal Setup with Git and Gemini CLI](#mac-terminal-setup-with-git-and-gemini-cli)
+12. [Cost Considerations](#cost-considerations)
+13. [Tips for Best Results](#tips-for-best-results)
 
 ---
 
