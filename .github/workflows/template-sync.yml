@@ -25,15 +25,14 @@ on:
         default: 'main'
         type: string
 
-permissions:
-  contents: write
-  pull-requests: write
-  workflows: write  # Required to sync workflow files from template
-
 jobs:
   sync-template:
     name: Sync from Template Repository
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      workflows: write
 
     steps:
       - name: Checkout repository
