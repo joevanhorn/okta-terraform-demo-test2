@@ -822,6 +822,782 @@ Solution:
 
 ---
 
+## Mac Terminal Setup with Git and Gemini CLI
+
+This section is for Mac users who want to use the terminal/command line for git operations and optionally the Gemini CLI for code generation.
+
+### Prerequisites
+
+- macOS 10.15 (Catalina) or later
+- Admin access to your Mac
+- Terminal app (built into macOS)
+- 15-30 minutes for initial setup
+
+---
+
+### Part 1: Installing and Configuring Git
+
+#### Option A: Install via Homebrew (Recommended)
+
+**1. Install Homebrew (if not already installed):**
+
+Open Terminal and run:
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+Follow the on-screen instructions. After installation, you may need to add Homebrew to your PATH:
+```bash
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+eval "$(/opt/homebrew/bin/brew shellenv)"
+```
+
+**2. Install Git:**
+```bash
+brew install git
+```
+
+**3. Verify installation:**
+```bash
+git --version
+```
+
+You should see output like: `git version 2.x.x`
+
+#### Option B: Install via Xcode Command Line Tools
+
+If you don't want to use Homebrew:
+
+**1. Install Xcode Command Line Tools:**
+```bash
+xcode-select --install
+```
+
+Click "Install" in the popup dialog.
+
+**2. Verify installation:**
+```bash
+git --version
+```
+
+#### Configure Git
+
+**Set your identity (required for commits):**
+
+```bash
+# Set your name
+git config --global user.name "Your Name"
+
+# Set your email
+git config --global user.email "your.email@example.com"
+
+# Verify settings
+git config --global --list
+```
+
+**Optional but recommended configurations:**
+
+```bash
+# Set default branch name to 'main'
+git config --global init.defaultBranch main
+
+# Enable colored output
+git config --global color.ui auto
+
+# Set VS Code as default editor (if you have it)
+git config --global core.editor "code --wait"
+
+# Or use nano if you prefer a simpler editor
+git config --global core.editor "nano"
+```
+
+---
+
+### Part 2: Setting Up GitHub Authentication
+
+You'll need to authenticate with GitHub to push/pull code.
+
+#### Option A: GitHub CLI (gh) - Recommended
+
+**1. Install GitHub CLI:**
+```bash
+brew install gh
+```
+
+**2. Authenticate with GitHub:**
+```bash
+gh auth login
+```
+
+Follow the prompts:
+- Choose: `GitHub.com`
+- Choose: `HTTPS` or `SSH` (HTTPS is easier for beginners)
+- Authenticate in browser: `Y`
+
+Your browser will open. Log in to GitHub and authorize the GitHub CLI.
+
+**3. Verify authentication:**
+```bash
+gh auth status
+```
+
+#### Option B: Personal Access Token
+
+If you prefer not to use GitHub CLI:
+
+**1. Create a Personal Access Token:**
+- Go to: https://github.com/settings/tokens
+- Click "Generate new token (classic)"
+- Name: "Mac Terminal Access"
+- Select scopes: `repo`, `workflow`
+- Click "Generate token"
+- **Copy the token immediately** (you won't see it again!)
+
+**2. Configure Git to use the token:**
+
+When git asks for password, use your token instead of your GitHub password.
+
+Or store it in macOS Keychain:
+```bash
+git config --global credential.helper osxkeychain
+```
+
+---
+
+### Part 3: Installing Google Gemini CLI (Optional)
+
+The Gemini CLI allows you to generate code directly from your terminal.
+
+#### Prerequisites
+
+- Python 3.8 or later (macOS usually includes Python 3)
+- Gemini API key from [Google AI Studio](https://aistudio.google.com/app/apikey)
+
+#### Install Python (if needed)
+
+**Check Python version:**
+```bash
+python3 --version
+```
+
+**If you need to install/update Python:**
+```bash
+brew install python@3.12
+```
+
+#### Set Up Gemini API Access
+
+**1. Install the Google Generative AI package:**
+```bash
+# Create a virtual environment (recommended)
+mkdir -p ~/gemini-workspace
+cd ~/gemini-workspace
+python3 -m venv venv
+source venv/bin/activate
+
+# Install the package
+pip install google-generativeai
+```
+
+**2. Set up your API key:**
+
+**Option A: Environment variable (temporary, for current session):**
+```bash
+export GEMINI_API_KEY="your-api-key-here"
+```
+
+**Option B: Add to shell profile (permanent):**
+
+For zsh (default on modern macOS):
+```bash
+echo 'export GEMINI_API_KEY="your-api-key-here"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+For bash:
+```bash
+echo 'export GEMINI_API_KEY="your-api-key-here"' >> ~/.bash_profile
+source ~/.bash_profile
+```
+
+**3. Verify setup:**
+
+Create a test script:
+```bash
+cat > test_gemini.py << 'EOF'
+import google.generativeai as genai
+import os
+
+genai.configure(api_key=os.environ['GEMINI_API_KEY'])
+model = genai.GenerativeModel('gemini-pro')
+
+response = model.generate_content("Say hello")
+print(response.text)
+EOF
+
+python test_gemini.py
+```
+
+You should see a greeting from Gemini!
+
+---
+
+### Part 4: Complete Workflow - Mac Terminal Edition
+
+Now let's put it all together to generate and commit Terraform code.
+
+#### Step-by-Step Workflow
+
+**1. Clone your repository:**
+
+```bash
+# Navigate to where you want to store the repo
+cd ~/Documents  # or wherever you prefer
+
+# Clone the repository
+gh repo clone YOUR-USERNAME/okta-terraform-demo-template
+# Or: git clone https://github.com/YOUR-USERNAME/okta-terraform-demo-template.git
+
+# Navigate into the repository
+cd okta-terraform-demo-template
+```
+
+**2. Create a feature branch:**
+
+```bash
+# Create and switch to a new branch
+git checkout -b feature/add-marketing-demo
+```
+
+**3. Generate code using Gemini CLI:**
+
+**Option A: Using Python script:**
+
+Create a generation script:
+```bash
+cat > generate_code.py << 'EOF'
+import google.generativeai as genai
+import os
+import sys
+
+genai.configure(api_key=os.environ['GEMINI_API_KEY'])
+model = genai.GenerativeModel('gemini-pro')
+
+# Read instructions from file (if you have them)
+# Or use inline instructions
+instructions = """
+You are an expert Terraform code generator for Okta.
+Generate valid Terraform HCL code following these rules:
+- Always use status = "ACTIVE" for users
+- Use $$ for Okta template variables (not $)
+- Include realistic example.com emails
+- Add helpful comments
+"""
+
+# Get prompt from command line argument
+if len(sys.argv) < 2:
+    print("Usage: python generate_code.py 'your prompt here'")
+    sys.exit(1)
+
+prompt = sys.argv[1]
+full_prompt = f"{instructions}\n\nGenerate: {prompt}\n\nOutput only Terraform code, no explanations."
+
+response = model.generate_content(full_prompt)
+print(response.text)
+EOF
+
+# Use it:
+python generate_code.py "Create 3 marketing users" > environments/demo/terraform/users.tf
+```
+
+**Option B: Using repository's built-in script:**
+
+If the repo has a `generate.py` script:
+```bash
+cd ai-assisted
+python generate.py \
+  --prompt "Create 3 marketing users" \
+  --provider gemini \
+  --output ../environments/demo/terraform/users.tf
+```
+
+**4. Review the generated code:**
+
+```bash
+# View the file
+cat environments/demo/terraform/users.tf
+
+# Or open in your editor
+code environments/demo/terraform/users.tf  # VS Code
+# or
+nano environments/demo/terraform/users.tf  # Terminal editor
+```
+
+**5. Validate the Terraform code:**
+
+```bash
+cd environments/demo/terraform
+
+# Format the code
+terraform fmt
+
+# Validate syntax
+terraform validate
+
+# See what will be created
+terraform plan
+```
+
+**6. Commit your changes:**
+
+```bash
+# Go back to repo root
+cd ~/Documents/okta-terraform-demo-template
+
+# Check status
+git status
+
+# Add files
+git add environments/demo/terraform/users.tf
+
+# Commit with message
+git commit -m "feat: Add marketing team users
+
+- Added 3 marketing users
+- Generated with Gemini CLI
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+
+# Push to GitHub
+git push -u origin feature/add-marketing-demo
+```
+
+**7. Create Pull Request:**
+
+```bash
+# Using GitHub CLI
+gh pr create \
+  --title "Add marketing team demo" \
+  --body "Added 3 marketing users for demo environment.
+
+Generated with Gemini CLI." \
+  --label "enhancement"
+
+# Or manually:
+# GitHub will show you a link to create the PR
+```
+
+---
+
+### Part 5: Common Mac Terminal Commands
+
+#### Navigation
+```bash
+# Show current directory
+pwd
+
+# List files
+ls -la
+
+# Change directory
+cd path/to/directory
+
+# Go to home directory
+cd ~
+
+# Go up one directory
+cd ..
+```
+
+#### Git Commands
+```bash
+# Check repository status
+git status
+
+# View commit history
+git log --oneline -n 10
+
+# See what changed
+git diff
+
+# Create new branch
+git checkout -b branch-name
+
+# Switch branches
+git checkout main
+
+# Pull latest changes
+git pull origin main
+
+# View remote repositories
+git remote -v
+
+# Undo last commit (keep changes)
+git reset --soft HEAD~1
+```
+
+#### File Operations
+```bash
+# View file contents
+cat filename.tf
+
+# Edit file
+nano filename.tf  # Simple terminal editor
+code filename.tf  # VS Code (if installed)
+
+# Copy file
+cp source.tf destination.tf
+
+# Move/rename file
+mv old-name.tf new-name.tf
+
+# Delete file
+rm filename.tf
+
+# Create directory
+mkdir -p path/to/directory
+```
+
+---
+
+### Part 6: Troubleshooting Mac Terminal
+
+#### Problem: "command not found: git"
+
+**Solution:**
+```bash
+# Install via Homebrew
+brew install git
+
+# Or install Xcode Command Line Tools
+xcode-select --install
+```
+
+#### Problem: "command not found: gh"
+
+**Solution:**
+```bash
+brew install gh
+```
+
+#### Problem: "Permission denied (publickey)" when pushing
+
+**Solution:**
+
+You need to set up SSH keys or use HTTPS with a token:
+
+**For HTTPS:**
+```bash
+# Use GitHub CLI to authenticate
+gh auth login
+
+# Or configure credential helper
+git config --global credential.helper osxkeychain
+```
+
+**For SSH:**
+```bash
+# Generate SSH key
+ssh-keygen -t ed25519 -C "your.email@example.com"
+
+# Add to ssh-agent
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
+
+# Copy public key
+cat ~/.ssh/id_ed25519.pub | pbcopy
+
+# Add to GitHub: Settings → SSH keys → New SSH key → Paste
+```
+
+#### Problem: "ModuleNotFoundError: No module named 'google.generativeai'"
+
+**Solution:**
+```bash
+# Make sure virtual environment is activated
+source ~/gemini-workspace/venv/bin/activate
+
+# Install the package
+pip install google-generativeai
+```
+
+#### Problem: "GEMINI_API_KEY not found"
+
+**Solution:**
+```bash
+# Check if it's set
+echo $GEMINI_API_KEY
+
+# If empty, set it
+export GEMINI_API_KEY="your-key-here"
+
+# To make permanent, add to shell profile
+echo 'export GEMINI_API_KEY="your-key-here"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+#### Problem: Can't see hidden files in Finder
+
+**Solution:**
+```bash
+# Show hidden files
+defaults write com.apple.finder AppleShowAllFiles YES
+killall Finder
+
+# Or use Command+Shift+. in Finder
+```
+
+---
+
+### Part 7: Recommended Mac Terminal Setup
+
+#### Terminal Appearance
+
+**iTerm2 (recommended alternative to Terminal):**
+```bash
+brew install --cask iterm2
+```
+
+Benefits: Split panes, better color schemes, more features
+
+#### Shell Improvements
+
+**Install oh-my-zsh (optional but nice):**
+```bash
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+```
+
+Benefits: Better prompts, git status in prompt, command completion
+
+#### Useful Aliases
+
+Add to `~/.zshrc` or `~/.bash_profile`:
+```bash
+# Git shortcuts
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit -m'
+alias gp='git push'
+alias gl='git log --oneline -n 10'
+
+# Terraform shortcuts
+alias tf='terraform'
+alias tfp='terraform plan'
+alias tfa='terraform apply'
+alias tff='terraform fmt'
+
+# Navigation shortcuts
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ll='ls -lah'
+
+# Repository shortcut (customize path)
+alias oktarepo='cd ~/Documents/okta-terraform-demo-template'
+```
+
+After adding, reload:
+```bash
+source ~/.zshrc
+```
+
+---
+
+### Part 8: Complete Example - Marketing Demo
+
+Let's walk through a complete example from start to finish.
+
+#### Scenario: Create Marketing Team Demo
+
+**1. Setup (one-time):**
+```bash
+# Navigate to your workspace
+cd ~/Documents
+
+# Clone repository (if not already)
+gh repo clone YOUR-USERNAME/okta-terraform-demo-template
+cd okta-terraform-demo-template
+```
+
+**2. Create feature branch:**
+```bash
+git checkout main
+git pull origin main
+git checkout -b feature/marketing-demo
+```
+
+**3. Generate users:**
+```bash
+cd ai-assisted
+
+# Using the repository's generate.py
+python generate.py \
+  --prompt "Create 5 marketing users with realistic names and titles" \
+  --provider gemini \
+  --output ../environments/demo/terraform/marketing_users.tf
+
+# Review the output
+cat ../environments/demo/terraform/marketing_users.tf
+```
+
+**4. Generate group:**
+```bash
+python generate.py \
+  --prompt "Create Marketing Team group" \
+  --provider gemini \
+  --output ../environments/demo/terraform/marketing_group.tf
+```
+
+**5. Generate Salesforce app:**
+```bash
+python generate.py \
+  --prompt "Create Salesforce OAuth app for Marketing Team" \
+  --provider gemini \
+  --output ../environments/demo/terraform/salesforce_app.tf
+```
+
+**6. Validate everything:**
+```bash
+cd ../environments/demo/terraform
+
+# Format all files
+terraform fmt
+
+# Validate
+terraform validate
+
+# See the plan
+terraform plan
+```
+
+**7. Commit and push:**
+```bash
+# Go to repo root
+cd ~/Documents/okta-terraform-demo-template
+
+# Check what we're committing
+git status
+git diff
+
+# Stage all new files
+git add environments/demo/terraform/*.tf
+
+# Commit
+git commit -m "feat: Add marketing team demo
+
+- 5 marketing users with realistic data
+- Marketing Team group
+- Salesforce OAuth integration
+
+🤖 Generated with Gemini CLI"
+
+# Push to GitHub
+git push -u origin feature/marketing-demo
+```
+
+**8. Create Pull Request:**
+```bash
+gh pr create \
+  --title "Marketing Team Demo Environment" \
+  --body "## Summary
+- Added 5 marketing team users
+- Created Marketing Team group
+- Integrated Salesforce OAuth app
+
+## Generated with
+Gemini CLI using the ai-assisted/generate.py tool
+
+## Testing
+- Terraform validate: ✅ Passed
+- Terraform plan: Ready for review
+- All files formatted" \
+  --label "demo" \
+  --label "enhancement"
+```
+
+**9. View the PR:**
+```bash
+# Open in browser
+gh pr view --web
+```
+
+**Done!** Your PR is ready for review and the automated terraform plan will run.
+
+---
+
+### Part 9: Tips for Mac Users
+
+**1. Use Tab Completion:**
+- Type first few letters of file/directory and press Tab
+- Git commands also support tab completion
+
+**2. Command History:**
+```bash
+# Search command history
+Ctrl+R, then type search term
+
+# View recent commands
+history | tail -20
+
+# Repeat last command
+!!
+
+# Repeat command that starts with 'git'
+!git
+```
+
+**3. Multiple Terminal Tabs:**
+- `Cmd+T` - New tab
+- `Cmd+W` - Close tab
+- `Cmd+1/2/3` - Switch between tabs
+
+**4. Copy/Paste in Terminal:**
+- Copy: `Cmd+C` (when text is selected)
+- Paste: `Cmd+V`
+- Note: `Ctrl+C` stops running commands!
+
+**5. Clear Terminal:**
+```bash
+clear  # Or Cmd+K
+```
+
+**6. Terminal Shortcuts:**
+- `Ctrl+A` - Jump to start of line
+- `Ctrl+E` - Jump to end of line
+- `Ctrl+U` - Delete to start of line
+- `Ctrl+K` - Delete to end of line
+- `Ctrl+W` - Delete previous word
+
+---
+
+### Part 10: Next Steps
+
+Now that you have everything set up:
+
+**✅ You can:**
+- Generate Terraform code from terminal
+- Commit and push changes via git
+- Create PRs using GitHub CLI
+- Validate code with terraform commands
+- Work entirely from your Mac terminal
+
+**🎯 Practice workflow:**
+1. Create a test branch
+2. Generate simple code (1-2 users)
+3. Commit and push
+4. Create a PR
+5. Merge it
+
+**📚 Learn more:**
+- Git documentation: https://git-scm.com/doc
+- GitHub CLI: https://cli.github.com/manual/
+- Terraform: https://www.terraform.io/docs
+
+**🤝 Get help:**
+- Built-in help: `git --help`, `gh --help`, `terraform --help`
+- Command-specific help: `git commit --help`
+
+---
+
 ## Cost Considerations
 
 ### Gemini API Pricing (as of 2025)
