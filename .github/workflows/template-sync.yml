@@ -176,7 +176,7 @@ jobs:
             echo '```' >> "$PR_BODY_FILE"
             echo "" >> "$PR_BODY_FILE"
             echo "---" >> "$PR_BODY_FILE"
-            echo "🤖 Generated automatically by [Sync Template Updates workflow](.github/workflows/sync-template.yml)" >> "$PR_BODY_FILE"
+            echo "🤖 Generated automatically by [Sync Template Updates workflow](.github/workflows/template-sync.yml)" >> "$PR_BODY_FILE"
           else
             echo "## ✨ Template Updates Available" > "$PR_BODY_FILE"
             echo "" >> "$PR_BODY_FILE"
@@ -204,7 +204,7 @@ jobs:
             echo '```' >> "$PR_BODY_FILE"
             echo "" >> "$PR_BODY_FILE"
             echo "---" >> "$PR_BODY_FILE"
-            echo "🤖 Generated automatically by [Sync Template Updates workflow](.github/workflows/sync-template.yml)" >> "$PR_BODY_FILE"
+            echo "🤖 Generated automatically by [Sync Template Updates workflow](.github/workflows/template-sync.yml)" >> "$PR_BODY_FILE"
           fi
 
           # Create PR using body file
