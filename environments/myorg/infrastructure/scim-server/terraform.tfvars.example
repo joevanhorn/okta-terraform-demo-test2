@@ -1,0 +1,80 @@
+# Terraform Variables for SCIM Server Deployment - EXAMPLE
+# Copy this file to terraform.tfvars and fill in your actual values
+
+# ============================================================================
+# REQUIRED: DNS Configuration
+# ============================================================================
+
+# Full domain name for the SCIM server
+# Example: scim.demo-myorg.example.com
+domain_name = "scim.demo-YOURORG.example.com"
+
+# Route53 hosted zone ID for your domain
+# Get with: aws route53 list-hosted-zones
+# Example: Z1234567890ABC
+route53_zone_id = "ZXXXXXXXXXXXXX"
+
+# ============================================================================
+# REQUIRED: SCIM Authentication
+# ============================================================================
+
+# Bearer token for SCIM authentication
+# Generate with: python3 -c 'import secrets; print(secrets.token_urlsafe(32))'
+# This token will be used by Okta to authenticate to the SCIM server
+scim_auth_token = "GENERATE_A_SECURE_TOKEN_HERE"
+
+# Optional: Basic authentication password (if using both Bearer + Basic auth)
+# Generate with: python3 -c 'import secrets; print(secrets.token_urlsafe(24))'
+# scim_basic_pass = "GENERATE_IF_USING_BASIC_AUTH"
+
+# ============================================================================
+# AWS Configuration
+# ============================================================================
+
+aws_region = "us-east-1"
+environment = "myorg"
+instance_type = "t3.micro"
+
+# ============================================================================
+# Network Configuration (Optional - defaults to public access)
+# ============================================================================
+
+# Allow HTTPS access from anywhere (default)
+# To restrict to Okta IP ranges only, uncomment and customize:
+# allowed_https_cidr = [
+#   "185.15.224.0/22",   # Okta US cell 1
+#   "185.82.176.0/22",   # Okta US cell 2
+#   "44.234.242.0/24",   # Okta US cell 3
+#   "54.188.171.0/24",   # Okta US cell 4
+#   "YOUR_OFFICE_IP/32"  # Your office for testing
+# ]
+
+# SSH access disabled by default (use SSM Session Manager instead)
+# To enable SSH, uncomment:
+# enable_ssh = true
+# allowed_ssh_cidr = ["YOUR_OFFICE_IP/32"]
+
+# ============================================================================
+# Custom Entitlements/Roles (Optional - defaults provided)
+# ============================================================================
+
+# Default entitlements (modify as needed for your demo):
+# - Administrator - Full system access
+# - Standard User - Basic application access
+# - Read Only - View-only access
+# - Support Agent - Customer support access
+# - Billing Admin - Financial/billing access
+
+# To customize entitlements, uncomment and modify:
+# custom_entitlements = jsonencode([
+#   {
+#     id = "administrator"
+#     name = "Administrator"
+#     description = "Full system access"
+#   },
+#   {
+#     id = "standard-user"
+#     name = "Standard User"
+#     description = "Basic application access"
+#   }
+# ])
