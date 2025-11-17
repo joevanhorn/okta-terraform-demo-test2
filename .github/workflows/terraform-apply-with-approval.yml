@@ -6,9 +6,10 @@ on:
       environment:
         description: 'Environment to apply changes'
         required: true
-        default: 'lowerdecklabs'
+        default: 'myorg'
         type: choice
         options:
+          - myorg
           - lowerdecklabs
           - production
           - staging
