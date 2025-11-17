@@ -228,28 +228,47 @@ When to generate SCIM server infrastructure:
    - Automatic HTTPS via Caddy + Let's Encrypt
    - Custom entitlements/roles
    - State: `s3://bucket/Okta-GitOps/{env}/scim-server/terraform.tfstate`
+   - **Deployment:** GitHub Actions workflow (`.github/workflows/deploy-scim-server.yml`)
 
 2. **Okta App** (`terraform/scim_app.tf`):
    - Creates Okta application for SCIM provisioning
    - Reads SCIM server outputs via data source
    - Must be configured via Python script (provider limitation)
 
-**Complete Workflow:**
+**Complete Workflow (GitHub Actions - Recommended):**
 ```bash
-# Step 1: Deploy SCIM server infrastructure
-cd environments/myorg/infrastructure/scim-server
+# Step 1: Add secrets to GitHub Environment
+# Navigate to: Settings → Environments → MyOrg → Add secrets
+# Required: SCIM_AUTH_TOKEN, AWS_REGION, AWS_ROLE_ARN
+
+# Step 2: Deploy SCIM server via workflow
+gh workflow run deploy-scim-server.yml \
+  -f environment=myorg \
+  -f domain_name=scim.demo-myorg.example.com \
+  -f route53_zone_id=Z1234567890ABC \
+  -f instance_type=t3.micro \
+  -f action=apply
+
+# Step 3: Create Okta SCIM app
+cd environments/myorg/terraform
 terraform apply
 
-# Step 2: Create Okta SCIM app
-cd ../../terraform
-terraform apply
-
-# Step 3: Configure SCIM connection (Python - API only)
+# Step 4: Configure SCIM connection (Python - API only)
 python3 ../../scripts/configure_scim_app.py \
   --app-id $(terraform output -raw scim_app_id) \
-  --scim-url $(terraform output -raw scim_server_url) \
-  --scim-token <token> \
+  --scim-url https://scim.demo-myorg.example.com/scim/v2 \
+  --scim-token <from-github-secret-SCIM_AUTH_TOKEN> \
   --test-connection
+```
+
+**Alternative: Manual Terraform Deployment**
+```bash
+# For local development/testing
+cd environments/myorg/infrastructure/scim-server
+cp terraform.tfvars.example terraform.tfvars
+vim terraform.tfvars  # Edit with your values
+terraform init
+terraform apply
 ```
 
 **Why Python Script?**
@@ -257,6 +276,7 @@ Okta Terraform provider (v6.4.0) does NOT support SCIM connection configuration.
 These settings must be configured via Okta Admin API (Python script handles this).
 
 **Documentation:**
-- SCIM Server: `environments/myorg/infrastructure/scim-server/README.md`
+- GitHub Workflow: `.github/workflows/deploy-scim-server.yml`
+- SCIM Server README: `environments/myorg/infrastructure/scim-server/README.md`
 - Automation Guide: `docs/SCIM_OKTA_AUTOMATION.md`
-- Release Plan: `upcoming-releases/SCIM_SERVER_INTEGRATION_PLAN.md`
+- Secrets Migration: `environments/myorg/infrastructure/scim-server/GITHUB_SECRETS_MIGRATION.md`

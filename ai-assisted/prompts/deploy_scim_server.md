@@ -92,7 +92,48 @@ Requirements:
 - Security groups (HTTP, HTTPS, optional SSH)
 - Elastic IP for stable addressing
 
-Configuration:
+Deployment Options:
+- Option A: GitHub Actions Workflow (Recommended for GitOps)
+- Option B: Manual Terraform (For local development/testing)
+
+════════════════════════════════════════════════════════════════════════════
+OPTION A: GitHub Actions Workflow Deployment (Recommended)
+════════════════════════════════════════════════════════════════════════════
+
+GitHub Environment Secrets Required:
+Add these to your GitHub Environment (e.g., MyOrg):
+- SCIM_AUTH_TOKEN - [Generate with: python3 -c 'import secrets; print(secrets.token_urlsafe(32))']
+- AWS_REGION - us-east-1 (or your preferred region)
+- AWS_ROLE_ARN - [Already configured for AWS OIDC]
+
+Workflow Parameters:
+- Environment: myorg
+- Domain name: scim.demo-myorg.example.com
+- Route53 zone ID: [Get with: aws route53 list-hosted-zones]
+- Instance type: t3.micro
+- Action: plan (first), then apply
+
+Deployment Command:
+gh workflow run deploy-scim-server.yml \
+  -f environment=myorg \
+  -f domain_name=scim.demo-myorg.example.com \
+  -f route53_zone_id=[Your Zone ID] \
+  -f instance_type=t3.micro \
+  -f action=plan
+
+After reviewing plan output, apply with:
+gh workflow run deploy-scim-server.yml \
+  -f environment=myorg \
+  -f domain_name=scim.demo-myorg.example.com \
+  -f route53_zone_id=[Your Zone ID] \
+  -f instance_type=t3.micro \
+  -f action=apply
+
+════════════════════════════════════════════════════════════════════════════
+OPTION B: Manual Terraform Deployment (Alternative)
+════════════════════════════════════════════════════════════════════════════
+
+Configuration (terraform.tfvars):
 - Domain name: scim.demo-myorg.example.com
 - Route53 zone ID: [Your Zone ID - get with: aws route53 list-hosted-zones]
 - AWS region: us-east-1
@@ -207,9 +248,55 @@ After the AI generates the code:
 
 ## Step 4: Deploy Infrastructure
 
+### Option A: GitHub Actions Workflow (Recommended)
+
+**1. Add secrets to GitHub Environment:**
+   - Navigate to: GitHub Repository → Settings → Environments → MyOrg
+   - Add secret: `SCIM_AUTH_TOKEN` (generate with: `python3 -c 'import secrets; print(secrets.token_urlsafe(32))'`)
+   - Verify: `AWS_REGION` and `AWS_ROLE_ARN` are already configured
+
+**2. Run workflow to plan deployment:**
+
+```bash
+gh workflow run deploy-scim-server.yml \
+  -f environment=myorg \
+  -f domain_name=scim.demo-myorg.example.com \
+  -f route53_zone_id=Z1234567890ABC \
+  -f instance_type=t3.micro \
+  -f action=plan
+```
+
+**3. Review plan output in GitHub Actions:**
+   - Go to Actions tab in GitHub
+   - Check plan results in workflow summary
+
+**4. Apply deployment:**
+
+```bash
+gh workflow run deploy-scim-server.yml \
+  -f environment=myorg \
+  -f domain_name=scim.demo-myorg.example.com \
+  -f route53_zone_id=Z1234567890ABC \
+  -f instance_type=t3.micro \
+  -f action=apply
+```
+
+**5. Review outputs in workflow summary:**
+   - Infrastructure outputs (URLs, IDs)
+   - Next-step instructions
+   - SCIM configuration commands
+
+### Option B: Manual Terraform (Alternative)
+
 ```bash
 # Navigate to SCIM server directory
 cd environments/myorg/infrastructure/scim-server
+
+# Create terraform.tfvars from example
+cp terraform.tfvars.example terraform.tfvars
+
+# Edit with your values
+vim terraform.tfvars
 
 # Initialize Terraform
 terraform init
