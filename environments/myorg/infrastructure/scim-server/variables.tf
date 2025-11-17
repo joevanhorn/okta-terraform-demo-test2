@@ -17,8 +17,8 @@ variable "domain_name" {
   type        = string
 
   validation {
-    condition     = can(regex("^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]\\.[a-z]{2,}$", var.domain_name))
-    error_message = "Domain name must be a valid FQDN (e.g., scim.example.com)"
+    condition     = can(regex("^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z]{2,}$", var.domain_name))
+    error_message = "Domain name must be a valid FQDN (e.g., scim.example.com or scim.demo.example.com)"
   }
 }
 
