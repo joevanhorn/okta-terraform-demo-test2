@@ -201,6 +201,55 @@ Or use the repository requirements:
 pip install -r requirements.txt
 ```
 
+### 4. Custom Entitlements (Optional)
+
+The SCIM server supports custom entitlements/roles to demonstrate different application scenarios. By default, it uses 5 standard roles (Administrator, Standard User, Read Only, Support Agent, Billing Manager).
+
+**Using Pre-Built Templates:**
+
+The repository includes templates for common applications:
+- `entitlements.json` - Default 5 roles
+- `examples/entitlements-salesforce.json` - Salesforce-style roles
+- `examples/entitlements-aws.json` - AWS IAM-style permissions
+- `examples/entitlements-generic.json` - Generic application roles
+
+**Deploying with Custom Entitlements:**
+
+When deploying the SCIM server, specify the entitlements file:
+
+```bash
+# Via GitHub Actions
+gh workflow run deploy-scim-server.yml \
+  -f environment=myorg \
+  -f domain_name=scim.demo-myorg.example.com \
+  -f route53_zone_id=Z1234567890ABC \
+  -f entitlements_file=examples/entitlements-salesforce.json \
+  -f action=apply
+
+# Via Terraform
+cd environments/myorg/infrastructure/scim-server
+terraform apply -var="entitlements_file=examples/entitlements-aws.json"
+```
+
+**Creating Custom Entitlements:**
+
+Create a JSON file following this schema:
+
+```json
+{
+  "entitlements": [
+    {
+      "id": "role_analyst",
+      "name": "Data Analyst",
+      "description": "Analytics and reporting access",
+      "permissions": ["read", "analytics", "reports"]
+    }
+  ]
+}
+```
+
+See `environments/myorg/infrastructure/scim-server/README.md` for complete documentation.
+
 ---
 
 ## Step-by-Step Guide

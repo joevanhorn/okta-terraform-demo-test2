@@ -115,9 +115,20 @@ variable "scim_server_path" {
 }
 
 variable "custom_entitlements" {
-  description = "Custom entitlements/roles for your application (JSON)"
+  description = "DEPRECATED: Use entitlements_file instead. Custom entitlements/roles for your application (JSON)"
   type        = string
   default     = ""  # If empty, uses default 5 roles
+}
+
+variable "entitlements_file" {
+  description = "Path to entitlements JSON file within the repository (relative to scim-server directory)"
+  type        = string
+  default     = "entitlements.json"
+
+  validation {
+    condition     = can(regex("\\.(json)$", var.entitlements_file))
+    error_message = "Entitlements file must be a JSON file (.json extension)"
+  }
 }
 
 # ===========================
