@@ -32,6 +32,11 @@ on:
           - t3.micro
           - t3.small
           - t3.medium
+      entitlements_file:
+        description: 'Entitlements JSON file (relative to scim-server directory, e.g., "entitlements.json" or "examples/entitlements-salesforce.json")'
+        required: false
+        default: 'entitlements.json'
+        type: string
       action:
         description: 'Terraform action to perform'
         required: true
@@ -106,6 +111,7 @@ jobs:
           TF_VAR_aws_region: ${{ secrets.AWS_REGION || 'us-east-1' }}
           TF_VAR_environment: ${{ github.event.inputs.environment }}
           TF_VAR_instance_type: ${{ github.event.inputs.instance_type }}
+          TF_VAR_entitlements_file: ${{ github.event.inputs.entitlements_file }}
         run: |
           terraform plan -out=tfplan
 
@@ -115,6 +121,7 @@ jobs:
           echo "**Domain:** ${{ github.event.inputs.domain_name }}" >> $GITHUB_STEP_SUMMARY
           echo "**Route53 Zone:** ${{ github.event.inputs.route53_zone_id }}" >> $GITHUB_STEP_SUMMARY
           echo "**Instance Type:** ${{ github.event.inputs.instance_type }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Entitlements:** ${{ github.event.inputs.entitlements_file }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Review the plan output above before applying." >> $GITHUB_STEP_SUMMARY
 
@@ -127,6 +134,7 @@ jobs:
           TF_VAR_aws_region: ${{ secrets.AWS_REGION || 'us-east-1' }}
           TF_VAR_environment: ${{ github.event.inputs.environment }}
           TF_VAR_instance_type: ${{ github.event.inputs.instance_type }}
+          TF_VAR_entitlements_file: ${{ github.event.inputs.entitlements_file }}
         run: |
           terraform apply -auto-approve tfplan
 

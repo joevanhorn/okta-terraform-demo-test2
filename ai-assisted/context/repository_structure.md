@@ -120,11 +120,15 @@ Each resource type has its own file:
 
 **SCIM Server** infrastructure files (in `infrastructure/scim-server/` subdirectory):
 - `provider.tf` - AWS provider with S3 backend configuration
-- `variables.tf` - SCIM server variables (domain, tokens, network config)
+- `variables.tf` - SCIM server variables (domain, tokens, network config, entitlements_file)
 - `main.tf` - EC2 instance, security groups, Elastic IP, Route53 DNS
 - `outputs.tf` - SCIM URLs, Okta configuration values, setup instructions
-- `user-data.sh` - Server initialization (Caddy reverse proxy + Flask SCIM server)
-- `demo_scim_server.py` - Flask SCIM 2.0 server with custom entitlements (20KB)
+- `user-data.sh` - Server initialization (Caddy + Flask, downloads entitlements.json)
+- `demo_scim_server.py` - Flask SCIM 2.0 server (loads entitlements from JSON file)
+- `entitlements.json` - Default entitlement/role definitions (5 standard roles)
+- `examples/entitlements-salesforce.json` - Salesforce-style roles (6 roles)
+- `examples/entitlements-aws.json` - AWS IAM-style permissions (7 roles)
+- `examples/entitlements-generic.json` - Generic application roles (7 roles)
 - `requirements.txt` - Python dependencies
 - `.gitignore` - Protect sensitive files
 - `README.md` - Complete deployment and configuration guide
@@ -247,7 +251,11 @@ gh workflow run deploy-scim-server.yml \
   -f domain_name=scim.demo-myorg.example.com \
   -f route53_zone_id=Z1234567890ABC \
   -f instance_type=t3.micro \
+  -f entitlements_file=entitlements.json \
   -f action=apply
+
+# Optional: Use custom entitlements (e.g., Salesforce roles)
+# -f entitlements_file=examples/entitlements-salesforce.json
 
 # Step 3: Create Okta SCIM app
 cd environments/myorg/terraform

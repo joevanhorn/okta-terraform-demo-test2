@@ -562,7 +562,8 @@ terraform output okta_configuration
 | `root_volume_size` | number | | `8` | Root EBS volume size (GB) |
 | `github_repo` | string | | `joevanhorn/okta-terraform-demo-template` | Source code repository |
 | `scim_server_path` | string | | `main/environments/myorg/infrastructure/scim-server` | Path to SCIM server code |
-| `custom_entitlements` | string | | `""` | Custom roles (JSON) |
+| `entitlements_file` | string | | `"entitlements.json"` | Path to entitlements JSON file (e.g., "examples/entitlements-salesforce.json") |
+| `custom_entitlements` | string | | `""` | **DEPRECATED:** Use `entitlements_file` instead |
 | **Network Configuration** | | | | |
 | `vpc_id` | string | | `""` | VPC ID (empty = default VPC) |
 | `subnet_id` | string | | `""` | Subnet ID (empty = default subnet) |
@@ -574,24 +575,107 @@ terraform output okta_configuration
 
 ## Custom Entitlements
 
-You can define custom roles by setting the `custom_entitlements` variable:
+### Overview
+
+The SCIM server loads entitlements/roles from a JSON configuration file, making it easy to customize the application's permission model without modifying code. This allows you to demonstrate different application scenarios for prospects.
+
+### Default Entitlements
+
+By default, the server loads `entitlements.json` which contains 5 standard roles:
+- **Administrator** - Full system access
+- **Standard User** - Basic access
+- **Read Only** - View only access
+- **Support Agent** - Customer support access
+- **Billing Manager** - Billing and payment access
+
+### Using Example Templates
+
+The repository includes pre-built templates for common applications:
+
+**Salesforce Roles** (`examples/entitlements-salesforce.json`):
+- System Administrator, Sales Manager, Sales Representative, Marketing User, Service Agent, Read Only User
+
+**AWS IAM Roles** (`examples/entitlements-aws.json`):
+- AdministratorAccess, PowerUserAccess, DeveloperAccess, ReadOnlyAccess, BillingAccess, SecurityAudit, NetworkAdministrator
+
+**Generic Application** (`examples/entitlements-generic.json`):
+- Owner, Administrator, Manager, Editor, Contributor, Viewer, Guest
+
+### Deployment with Custom Entitlements
+
+**Option 1: GitHub Actions Workflow (Recommended)**
+
+Use the `entitlements_file` input when deploying:
+
+```bash
+gh workflow run deploy-scim-server.yml \
+  -f environment=myorg \
+  -f domain_name=scim.demo-myorg.example.com \
+  -f route53_zone_id=Z1234567890ABC \
+  -f entitlements_file=examples/entitlements-salesforce.json \
+  -f action=apply
+```
+
+**Option 2: Terraform Variables**
+
+Set the variable in your deployment:
 
 ```hcl
-custom_entitlements = jsonencode([
-  {
-    id          = "role_custom1"
-    name        = "Data Analyst"
-    description = "Access to analytics dashboard"
-    permissions = ["read", "analytics", "reports"]
-  },
-  {
-    id          = "role_custom2"
-    name        = "Developer"
-    description = "Development environment access"
-    permissions = ["read", "write", "deploy", "logs"]
-  }
-])
+# terraform.tfvars
+entitlements_file = "examples/entitlements-aws.json"
 ```
+
+Or via command line:
+
+```bash
+terraform apply -var="entitlements_file=examples/entitlements-generic.json"
+```
+
+### Creating Custom Entitlements
+
+Create a new JSON file in the repository:
+
+```json
+{
+  "entitlements": [
+    {
+      "id": "role_data_analyst",
+      "name": "Data Analyst",
+      "description": "Access to analytics dashboard",
+      "permissions": ["read", "analytics", "reports", "export_data"]
+    },
+    {
+      "id": "role_developer",
+      "name": "Developer",
+      "description": "Development environment access",
+      "permissions": ["read", "write", "deploy", "logs", "debug"]
+    }
+  ]
+}
+```
+
+Save to: `environments/myorg/infrastructure/scim-server/custom/my-app-entitlements.json`
+
+Then deploy with:
+
+```bash
+gh workflow run deploy-scim-server.yml \
+  -f entitlements_file=custom/my-app-entitlements.json \
+  -f action=apply
+```
+
+### Entitlement JSON Schema
+
+Each entitlement object requires:
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `id` | string | Yes | Unique identifier (e.g., `role_admin`) |
+| `name` | string | Yes | Display name shown in dashboard |
+| `description` | string | Yes | Description of the role's purpose |
+| `permissions` | array | Yes | List of permission strings |
+
+**Important:** The `id` field is used as the SCIM role value that Okta will provision.
 
 ## Monitoring and Troubleshooting
 
